@@ -1,0 +1,15 @@
+on: [pull_request]
+
+jobs:
+  test_action:
+    runs-on: ubuntu-latest
+    name: A job to say hello
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Yarn diff
+        # Uses an action in the root directory
+        uses: ./
+        id: hello
+        with:
+          path: 'yarn.lock'
