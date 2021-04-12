@@ -1,0 +1,19 @@
+{
+  "name": "yarn-lock-changes",
+  "version": "0.0.1",
+  "main": "dist/index.js",
+  "repository": "github:Simek/yarn-lock-changes",
+  "author": "Simek <me@simek.dev>",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "compile": "ncc build action.js --license licenses.txt"
+  },
+  "dependencies": {
+    "@actions/core": "^1.2.6",
+    "@actions/exec": "^1.0.4",
+    "@actions/github": "^4.0.0",
+    "@ksmakey/yarn-lock-diff": "^0.2.1",
+    "markdown-table": "^3.0.0"
+  }
+}

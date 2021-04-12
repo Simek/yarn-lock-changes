@@ -1,0 +1,13 @@
+name: 'Yarn Lock Changes'
+description: 'Adds a comment with human-readable summary of `yarn.lock` changes.'
+branding:
+  icon: 'copy'
+  color: 'purple'
+inputs:
+  path:
+    description: 'Path to the `yarn.lock` file'
+    required: false
+    default: 'yarn.lock'
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
