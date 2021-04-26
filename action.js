@@ -52,7 +52,7 @@ const formatNameAndVersion = (obj) => {
 async function run() {
   try {
     const octokit = github.getOctokit(core.getInput('token'));
-    const { owner, repo } = github.context.repo;
+    const { owner, repository } = github.context.repo;
 
     const PRId = github.context.issue.number;
     if (!PRId) {
@@ -61,13 +61,13 @@ async function run() {
 
     // Decide if run
 
-    const { data } = await octokit.rest.pulls.get({
-      owner,
-      repo,
-      pull_number: PRId,
-    });
+    // const { data } = await octokit.rest.pulls.get({
+    //   owner,
+    //   repo: repository,
+    //   pull_number: PRId,
+    // });
 
-    // console.log(data)
+    console.log(repository)
 
     const lockPath = path.resolve(process.cwd(), core.getInput('path'));
 
@@ -83,7 +83,7 @@ async function run() {
     const updatedLock = lockfile.parse(content);
     console.warn(updatedLock)
 
-    const response = await fetch(`https://raw.githubusercontent.com/${repo.full_name}/master/${core.getInput('path')}`);
+    const response = await fetch(`https://raw.githubusercontent.com/${repository}/master/${core.getInput('path')}`);
     const masterLock = lockfile.parse(await response.json());
 
 
