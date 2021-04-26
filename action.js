@@ -2,9 +2,18 @@ const core = require('@actions/core');
 const github = require('@actions/github');
 const lockfile = require('@yarnpkg/lockfile');
 const fs = require('fs');
-const path = require('path');
 const { markdownTable } = require('markdown-table');
 const fetch = require('node-fetch');
+const path = require('path');
+
+const formatNameAndVersion = (obj) =>
+  Object.fromEntries(
+    Object.keys(obj.object).map((key) => {
+      const nameParts = key.split('@');
+      const name = nameParts[0] === '' ? '@' + nameParts[1] : nameParts[0];
+      return [name, { name, version: obj.object[key].version }];
+    })
+  );
 
 const diffLocks = (previous, current) => {
   const changes = {};
@@ -39,14 +48,6 @@ const diffLocks = (previous, current) => {
   return changes;
 };
 
-const formatNameAndVersion = (obj) =>
-  Object.fromEntries(
-    Object.keys(obj.object).map((key) => {
-      const nameParts = key.split('@');
-      const name = nameParts[0] === '' ? '@' + nameParts[1] : nameParts[0];
-      return [name, { name, version: obj.object[key].version }];
-    })
-  );
 const createTable = (lockChanges) =>
   markdownTable([
     ['Name', 'Status', 'Previous', 'Current'],
@@ -54,6 +55,7 @@ const createTable = (lockChanges) =>
       .map(([key, { status, previous, current }]) => ['`' + key + '`', status, previous, current])
       .sort((a, b) => a[0].localeCompare(b[0]))
   ]);
+
 const run = async () => {
   try {
     const octokit = github.getOctokit(core.getInput('token'));
