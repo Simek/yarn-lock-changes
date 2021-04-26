@@ -11,7 +11,6 @@
   },
   "dependencies": {
     "@actions/core": "^1.2.6",
-    "@actions/exec": "^1.0.4",
     "@actions/github": "^4.0.0",
     "@yarnpkg/lockfile": "^1.1.0",
     "markdown-table": "^3.0.0",
