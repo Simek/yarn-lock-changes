@@ -17,7 +17,7 @@ const imagesLinks = `
   [downgraded]: ${ASSETS_URL}/downgraded.svg" "Downgraded"
 `;
 
-const getStatusLabel = (status) => `[<sub>![${status.toUpperCase()}][${status}]</sub>](#)`;
+const getStatusLabel = (status) => `[<sub>![${status}]</sub>](#)`;
 
 const formatNameAndVersion = (obj) =>
   Object.fromEntries(
@@ -111,7 +111,7 @@ const run = async () => {
         owner,
         repo,
         issue_number: number,
-        body: '## `yarn.lock` changes' + '\n' + diffsTable + imagesLinks
+        body: '## `yarn.lock` changes' + '\n' + diffsTable + '\n' + imagesLinks
       });
     }
   } catch (error) {
