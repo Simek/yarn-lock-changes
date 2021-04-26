@@ -36,7 +36,7 @@ async function run() {
       throw new Error(`${paths.base} does not exist!`)
     }
 
-    const lockContent = await fs.readFileSync(paths.base, 'utf8')
+    const lockContent = fs.readFileSync(paths.base, 'utf8')
 
     // await exec.exec('node', ['index.js', 'foo=bar']);
     const out = lockfile.parse(lockContent);
