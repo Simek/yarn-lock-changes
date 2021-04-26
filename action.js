@@ -52,6 +52,7 @@ async function run() {
   try {
     const octokit = github.getOctokit(core.getInput('token'));
     const { owner, repo, number } = github.context.issue;
+    const { default_branch } = github.context.payload.repository;
 
     if (!number) {
       throw new Error('Cannot find the PR!');
@@ -66,7 +67,7 @@ async function run() {
     const content = await fs.readFileSync(lockPath, { encoding: 'utf8' });
     const updatedLock = lockfile.parse(content);
 
-    console.log(github.context, `https://raw.githubusercontent.com/${owner}/${repo}/master/${core.getInput('path')}`)
+    console.log(`https://raw.githubusercontent.com/${owner}/${repo}/${default_branch}/${core.getInput('path')}`)
 
     const response = await fetch(`https://raw.githubusercontent.com/Simek/wikitaxa/master/${core.getInput('path')}`);
 
@@ -83,7 +84,7 @@ async function run() {
       ['Name', 'Previous', 'Current'],
       ...Object.entries(lockChanges).map(([key, value]) => (
         [key, value.previous, value.current]
-      ))
+      )).sort((a, b) => a[0].localeCompare(b[0]))
     ])
 
     await octokit.issues.createComment({
