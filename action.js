@@ -11,9 +11,7 @@ async function run() {
   try {
     // Auth
     const octokit = github.getOctokit(core.getInput('token'));
-    const { owner, repo, payload } = github.context.repo;
-
-    console.log(repo, payload)
+    const { owner, repo } = github.context.repo;
 
     const PRId = github.context.issue.number;
     if (!PRId) throw new Error('Cannot find the PR!');
@@ -38,7 +36,7 @@ async function run() {
       throw new Error(`${paths.base} does not exist!`)
     }
 
-    const lockContent = await fs.readFile(paths.base, 'utf8')
+    const lockContent = await fs.readFileSync(paths.base, 'utf8')
 
     // await exec.exec('node', ['index.js', 'foo=bar']);
     const out = lockfile.parse(lockContent);
