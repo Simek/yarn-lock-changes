@@ -1,7 +1,6 @@
 const core = require('@actions/core');
 // const exec = require('@actions/exec');
 const github = require('@actions/github');
-// const yarnDiff = require('@ksmakey/yarn-lock-diff');
 const markdownTable = require('markdown-table');
 const lockfile = require("@yarnpkg/lockfile");
 const path = require('path');
@@ -38,7 +37,7 @@ async function run() {
       throw new Error(`${paths.base} does not exist!`)
     }
 
-    const content = await fs.readFileSync(paths.base, 'utf-8');
+    const content = await fs.readFileSync(paths.base, { encoding: 'utf8' });
 
     // await exec.exec('node', ['index.js', 'foo=bar']);
     const out = lockfile.parse(content);

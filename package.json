@@ -7,7 +7,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "compile": "ncc build action.js -m --no-source-map-register"
+    "compile": "ncc build action.js -m"
   },
   "dependencies": {
     "@actions/core": "^1.2.6",
