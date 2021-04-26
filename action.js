@@ -1,6 +1,6 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
-const lockfile = require("@yarnpkg/lockfile");
+const lockfile = require('@yarnpkg/lockfile');
 const fs = require('fs');
 const path = require('path');
 const { markdownTable } = require('markdown-table');
@@ -14,44 +14,44 @@ const diff = (previous, current) => {
   Object.keys(previousPackages).forEach((key) => {
     changes[key] = {
       previous: previousPackages[key].version,
-      current: "-",
-      status: "🗑️ **REMOVED**"
+      current: '-',
+      status: '🗑️ **REMOVED**'
     };
   });
 
   Object.keys(currentPackages).forEach((key) => {
     if (!changes[key]) {
       changes[key] = {
-        previous: "-",
+        previous: '-',
         current: currentPackages[key].version,
-        status: "✨ **NEW**"
+        status: '✨ **NEW**'
       };
     } else {
       if (changes[key].previous === currentPackages[key].version) {
         delete changes[key];
       } else {
         changes[key].current = currentPackages[key].version;
-        changes[key].status = "⬆️ **UPDATED**";
+        changes[key].status = '⬆️ **UPDATED**';
       }
     }
   });
 
   return changes;
-}
+};
 
 const formatNameAndVersion = (obj) => {
   const packages = {};
 
   Object.keys(obj.object).forEach((key) => {
-    const names = key.split("@");
-    const name = names[0] === "" ? "@" + names[1] : names[0];
+    const names = key.split('@');
+    const name = names[0] === '' ? '@' + names[1] : names[0];
     packages[name] = { name, version: obj.object[key].version };
   });
 
   return packages;
-}
+};
 
-async function run() {
+const run = async () => {
   try {
     const octokit = github.getOctokit(core.getInput('token'));
     const { owner, repo, number } = github.context.issue;
@@ -64,7 +64,7 @@ async function run() {
     const lockPath = path.resolve(process.cwd(), core.getInput('path'));
 
     if (!fs.existsSync(lockPath)) {
-      throw new Error(`${lockPath} does not exist!`)
+      throw new Error(`${lockPath} does not exist!`);
     }
 
     const content = await fs.readFileSync(lockPath, { encoding: 'utf8' });
@@ -77,16 +77,14 @@ async function run() {
     }
 
     const masterLock = lockfile.parse(await response.text());
-
     const lockChanges = diff(masterLock, updatedLock);
-    console.warn(lockChanges)
 
     const diffsTable = markdownTable([
       ['Name', 'Status', 'Previous', 'Current'],
       ...Object.entries(lockChanges).map(([key, value]) => (
         ['`' + key + '`', value.status, value.previous, value.current]
       )).sort((a, b) => a[0].localeCompare(b[0]))
-    ])
+    ]);
 
     await octokit.issues.createComment({
       owner,
@@ -98,6 +96,6 @@ async function run() {
   } catch (error) {
     core.setFailed(error.message);
   }
-}
+};
 
 run();

@@ -6,7 +6,8 @@
   "author": "Simek <me@simek.dev>",
   "license": "MIT",
   "scripts": {
-    "compile": "ncc build action.js -m"
+    "compile": "ncc build action.js -m",
+    "lint": "eslint action.js"
   },
   "dependencies": {
     "@actions/core": "^1.2.6",
@@ -14,5 +15,8 @@
     "@yarnpkg/lockfile": "^1.1.0",
     "markdown-table": "^3.0.0",
     "node-fetch": "^2.6.1"
+  },
+  "devDependencies": {
+    "eslint": "^7.25.0"
   }
 }
