@@ -39,7 +39,7 @@ const diffLocks = (previous, current) => {
   return changes;
 };
 
-const formatNameAndVersion = (obj) => 
+const formatNameAndVersion = (obj) =>
   Object.fromEntries(Object.keys(obj.object).map((key) => {
     const nameParts = key.split('@');
     const name = nameParts[0] === '' ? '@' + nameParts[1] : nameParts[0];
@@ -47,10 +47,10 @@ const formatNameAndVersion = (obj) =>
   }))
 ;
 
-const createTable = (lockChanges) => 
+const createTable = (lockChanges) =>
   markdownTable([
     ['Name', 'Status', 'Previous', 'Current'],
-    ...Object.entries(lockChanges).map(([key, { status, previous, current }]) => 
+    ...Object.entries(lockChanges).map(([key, { status, previous, current }]) =>
       ['`' + key + '`', status, previous, current]
     ).sort((a, b) => a[0].localeCompare(b[0]))
   ])
@@ -83,15 +83,16 @@ const run = async () => {
 
     const masterLock = lockfile.parse(await response.text());
     const lockChanges = diffLocks(masterLock, updatedLock);
-    const diffsTable = createTable(lockChanges);
 
-    await octokit.issues.createComment({
-      owner,
-      repo,
-      issue_number: number,
-      body: '## `yarn.lock` changes' + '\n' + diffsTable
-    });
-
+    if (Object.keys(lockChanges).length) {
+      const diffsTable = createTable(lockChanges);
+      await octokit.issues.createComment({
+        owner,
+        repo,
+        issue_number: number,
+        body: '## `yarn.lock` changes' + '\n' + diffsTable
+      });
+    }
   } catch (error) {
     core.setFailed(error.message);
   }
