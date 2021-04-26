@@ -1,8 +1,9 @@
 const core = require('@actions/core');
 // const exec = require('@actions/exec');
 const github = require('@actions/github');
-const yarnDiff = require('@ksmakey/yarn-lock-diff');
-const markdownTable = require('markdown-table')
+// const yarnDiff = require('@ksmakey/yarn-lock-diff');
+const markdownTable = require('markdown-table');
+const lockfile = require("@yarnpkg/lockfile");
 
 async function run() {
   try {
@@ -26,7 +27,7 @@ async function run() {
     console.log(data)
 
     // await exec.exec('node', ['index.js', 'foo=bar']);
-    const out = new yarnDiff().run();
+    const out = lockfile.parse();
 
     // Compose comment
     const diffsTable = markdownTable([
