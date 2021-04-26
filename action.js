@@ -14,14 +14,14 @@ const diff = (previous, current) => {
   Object.keys(previousPackages).forEach((key) => {
     changes[key] = {
       previous: previousPackages[key].version,
-      current: "REMOVED"
+      current: "**REMOVED**"
     };
   });
 
   Object.keys(currentPackages).forEach((key) => {
     if (!changes[key]) {
       changes[key] = {
-        previous: "NEW",
+        previous: "**NEW**",
         current: currentPackages[key].version
       };
     } else {
@@ -57,14 +57,6 @@ async function run() {
       throw new Error('Cannot find the PR!');
     }
 
-    // Decide if run
-
-    // const { data } = await octokit.rest.pulls.get({
-    //   owner,
-    //   repo: repository,
-    //   pull_number: PRId,
-    // });
-
     const lockPath = path.resolve(process.cwd(), core.getInput('path'));
 
     if (!fs.existsSync(lockPath)) {
@@ -73,7 +65,6 @@ async function run() {
 
     const content = await fs.readFileSync(lockPath, { encoding: 'utf8' });
     const updatedLock = lockfile.parse(content);
-    // console.warn(updatedLock)
 
     console.log(`https://raw.githubusercontent.com/${owner}/${repo}/master/${core.getInput('path')}`)
 
@@ -86,16 +77,10 @@ async function run() {
 
     // Compose comment
     const diffsTable = markdownTable([
-      [
-        'Name',
-        'Previous',
-        'Current'
-      ],
-      [
-        "",
-        "",
-        ""
-      ]
+      ['Name', 'Previous', 'Current'],
+      Object.entries(lockChanges).map(([key, value]) => (
+        [key, value.previous, value.current]
+      ))
     ])
 
     // Publish comment
@@ -104,9 +89,9 @@ async function run() {
       repo,
       issue_number: number,
       body:
-        `## \`yarn.lock\` changes
+        `
+        ## \`yarn.lock\` changes
         ${diffsTable}
-        \`\`\`${lockChanges}\`\`\`
         `
     });
 
