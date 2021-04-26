@@ -67,7 +67,7 @@ async function run() {
     //   pull_number: PRId,
     // });
 
-    console.log(repository)
+    console.log(repository, `https://raw.githubusercontent.com/${repository}/master/${core.getInput('path')}`)
 
     const lockPath = path.resolve(process.cwd(), core.getInput('path'));
 
