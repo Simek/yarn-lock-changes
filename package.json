@@ -17,6 +17,6 @@
     "node-fetch": "^2.6.1"
   },
   "devDependencies": {
-    "eslint": "^7.25.0"
+    "simple-git-hooks": "^2.4.1"
   }
 }
