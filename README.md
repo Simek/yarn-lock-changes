@@ -2,7 +2,10 @@
 
 Creates a comment inside Pull Request with the human-readable summary of changes to the `yarn.lock`.
 
-<img width="506" alt="Screenshot 2021-04-26 154252" src="https://user-images.githubusercontent.com/719641/116092424-17dbe100-a6a6-11eb-9725-78bf42f836b4.png">
+<img width="398" alt="Screenshot 2021-04-26 170818" src="https://user-images.githubusercontent.com/719641/116106068-3051f880-a6b2-11eb-8f3f-33bb63e2aa1a.png">
+
+#### Comment example
+* https://github.com/Simek/yarn-lock-changes/pull/6
 
 ## Usage
 
