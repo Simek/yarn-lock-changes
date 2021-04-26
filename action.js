@@ -11,10 +11,10 @@ const GH_RAW_URL = 'https://raw.githubusercontent.com';
 const ASSETS_URL = `${GH_RAW_URL}/Simek/yarn-lock-changes/main/assets`;
 
 const imagesLinks = `
-  [added]: ${ASSETS_URL}/added.svg" "Added"
-  [removed]: ${ASSETS_URL}/removed.svg" "Removed"
-  [updated]: ${ASSETS_URL}/updated.svg" "Updated"
-  [downgraded]: ${ASSETS_URL}/downgraded.svg" "Downgraded"
+  [added]: ${ASSETS_URL}/added.svg "Added"
+  [removed]: ${ASSETS_URL}/removed.svg "Removed"
+  [updated]: ${ASSETS_URL}/updated.svg "Updated"
+  [downgraded]: ${ASSETS_URL}/downgraded.svg "Downgraded"
 `;
 
 const getStatusLabel = (status) => `[<sub>![${status}]</sub>](#)`;
