@@ -7,8 +7,7 @@ const { markdownTable } = require('markdown-table');
 const fetch = require('node-fetch');
 
 const diff = (previous, current) => {
-  let changes = {};
-
+  const changes = {};
   const previousPackages = formatNameAndVersion(previous);
   const currentPackages = formatNameAndVersion(current);
 
@@ -52,12 +51,9 @@ const formatNameAndVersion = (obj) => {
 async function run() {
   try {
     const octokit = github.getOctokit(core.getInput('token'));
-    const { owner, repository, repo } = github.context;
+    const { owner, repo, number } = github.context.issue;
 
-    console.warn(github.context.issue.repo)
-
-    const PRId = github.context.issue.number;
-    if (!PRId) {
+    if (!number) {
       throw new Error('Cannot find the PR!');
     }
 
@@ -69,31 +65,24 @@ async function run() {
     //   pull_number: PRId,
     // });
 
-    console.log(github.context.issue, `https://raw.githubusercontent.com/${repository}/master/${core.getInput('path')}`)
-
     const lockPath = path.resolve(process.cwd(), core.getInput('path'));
-
-    console.log(lockPath)
 
     if (!fs.existsSync(lockPath)) {
       throw new Error(`${lockPath} does not exist!`)
     }
 
     const content = await fs.readFileSync(lockPath, { encoding: 'utf8' });
-
-    // await exec.exec('node', ['index.js', 'foo=bar']);
     const updatedLock = lockfile.parse(content);
     // console.warn(updatedLock)
+
+    console.log(`https://raw.githubusercontent.com/${owner}/${repo}/master/${core.getInput('path')}`)
 
     // const response = await fetch(`https://raw.githubusercontent.com/${repository}/master/${core.getInput('path')}`);
     const response = await fetch(`https://raw.githubusercontent.com/Simek/wikitaxa/master/${core.getInput('path')}`);
     const masterLock = lockfile.parse(await response.text());
 
-
-    const lockChanges = this.diff(masterLock, updatedLock);
-
+    const lockChanges = diff(masterLock, updatedLock);
     console.warn(lockChanges)
-
 
     // Compose comment
     const diffsTable = markdownTable([
@@ -113,7 +102,7 @@ async function run() {
     await octokit.issues.createComment({
       owner,
       repo,
-      issue_number: PRId,
+      issue_number: number,
       body:
         `## \`yarn.lock\` changes
         ${diffsTable}
