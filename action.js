@@ -7,6 +7,12 @@ const { markdownTable } = require('markdown-table');
 const fetch = require('node-fetch');
 const path = require('path');
 
+const GH_RAW_URL = 'https://raw.githubusercontent.com';
+const ASSETS_URL = `${GH_RAW_URL}/Simek/yarn-lock-changes/main/assets`;
+
+const getStatusLabel = (status) =>
+  `<sub><img alt="${status.toUpperCase()}" src="${ASSETS_URL}/${status}.svg" height="16" /></sub>`;
+
 const formatNameAndVersion = (obj) =>
   Object.fromEntries(
     Object.keys(obj.object).map((key) => {
@@ -25,7 +31,7 @@ const diffLocks = (previous, current) => {
     changes[key] = {
       previous: previousPackages[key].version,
       current: '-',
-      status: '🗑️ <small>REMOVED</small>'
+      status: getStatusLabel('removed')
     };
   });
 
@@ -34,7 +40,7 @@ const diffLocks = (previous, current) => {
       changes[key] = {
         previous: '-',
         current: currentPackages[key].version,
-        status: '✨ <small>ADDED</small>'
+        status: getStatusLabel('added')
       };
     } else {
       if (changes[key].previous === currentPackages[key].version) {
@@ -42,9 +48,9 @@ const diffLocks = (previous, current) => {
       } else {
         changes[key].current = currentPackages[key].version;
         if (compareVersions(changes[key].previous, changes[key].current) === 1) {
-          changes[key].status = '⬇️ <small>DOWNGRADED</small>';
+          changes[key].status = getStatusLabel('downgraded');
         } else {
-          changes[key].status = '⬆️ <small>UPDATED</small>';
+          changes[key].status = getStatusLabel('updated');
         }
       }
     }
@@ -84,9 +90,7 @@ const run = async () => {
     const content = await fs.readFileSync(lockPath, { encoding: 'utf8' });
     const updatedLock = lockfile.parse(content);
 
-    const response = await fetch(
-      `https://raw.githubusercontent.com/${owner}/${repo}/${default_branch}/${inputPath}`
-    );
+    const response = await fetch(`${GH_RAW_URL}/${owner}/${repo}/${default_branch}/${inputPath}`);
 
     if (!response) {
       throw new Error('Cannot fetch current lock file!');
