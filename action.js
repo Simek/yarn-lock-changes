@@ -52,7 +52,9 @@ const formatNameAndVersion = (obj) => {
 async function run() {
   try {
     const octokit = github.getOctokit(core.getInput('token'));
-    const { owner, repository } = github.context.repo;
+    const { owner, repository, repo } = github.context;
+
+    console.warn(github.context)
 
     const PRId = github.context.issue.number;
     if (!PRId) {
@@ -81,13 +83,16 @@ async function run() {
 
     // await exec.exec('node', ['index.js', 'foo=bar']);
     const updatedLock = lockfile.parse(content);
-    console.warn(updatedLock)
+    // console.warn(updatedLock)
 
-    const response = await fetch(`https://raw.githubusercontent.com/${repository}/master/${core.getInput('path')}`);
+    // const response = await fetch(`https://raw.githubusercontent.com/${repository}/master/${core.getInput('path')}`);
+    const response = await fetch(`https://raw.githubusercontent.com/Simek/wikitaxa/master/${core.getInput('path')}`);
     const masterLock = lockfile.parse(await response.json());
 
 
     const lockChanges = this.diff(masterLock, updatedLock);
+
+    console.warn(lockChanges)
 
 
     // Compose comment
