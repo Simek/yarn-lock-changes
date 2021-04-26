@@ -66,10 +66,14 @@ async function run() {
     const content = await fs.readFileSync(lockPath, { encoding: 'utf8' });
     const updatedLock = lockfile.parse(content);
 
-    console.log(`https://raw.githubusercontent.com/${owner}/${repo}/master/${core.getInput('path')}`)
+    console.log(github.context, `https://raw.githubusercontent.com/${owner}/${repo}/master/${core.getInput('path')}`)
 
-    // const response = await fetch(`https://raw.githubusercontent.com/${repository}/master/${core.getInput('path')}`);
     const response = await fetch(`https://raw.githubusercontent.com/Simek/wikitaxa/master/${core.getInput('path')}`);
+
+    if (!response) {
+      throw new Error('Cannot fetch current lock file!');
+    }
+
     const masterLock = lockfile.parse(await response.text());
 
     const lockChanges = diff(masterLock, updatedLock);
@@ -86,7 +90,7 @@ async function run() {
       owner,
       repo,
       issue_number: number,
-      body: '## `yarn.lock` changes' + diffsTable
+      body: '## `yarn.lock` changes' + '\n' + diffsTable
     });
 
   } catch (error) {
