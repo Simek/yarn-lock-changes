@@ -4,9 +4,6 @@ Creates a comment inside Pull Request with the human-readable summary of changes
 
 <img width="572" alt="Screenshot 2021-04-26 201617" src="https://user-images.githubusercontent.com/719641/116132125-78cadf80-a6cd-11eb-901d-7f3cb6efd1c9.png">
 
-#### Comment example
-* https://github.com/Simek/yarn-lock-changes/pull/6#issuecomment-826911530
-
 ## Usage
 
 ```yml
