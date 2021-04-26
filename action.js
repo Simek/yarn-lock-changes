@@ -70,9 +70,7 @@ async function run() {
     const content = await fs.readFileSync(lockPath, { encoding: 'utf8' });
     const updatedLock = lockfile.parse(content);
 
-    console.log(`https://raw.githubusercontent.com/${owner}/${repo}/${default_branch}/${core.getInput('path')}`)
-
-    const response = await fetch(`https://raw.githubusercontent.com/Simek/wikitaxa/master/${core.getInput('path')}`);
+    const response = await fetch(`https://raw.githubusercontent.com/${owner}/${repo}/${default_branch}/${core.getInput('path')}`);
 
     if (!response) {
       throw new Error('Cannot fetch current lock file!');

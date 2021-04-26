@@ -5,7 +5,6 @@
   "repository": "github:Simek/yarn-lock-changes",
   "author": "Simek <me@simek.dev>",
   "license": "MIT",
-  "private": true,
   "scripts": {
     "compile": "ncc build action.js -m"
   },
