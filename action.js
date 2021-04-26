@@ -14,7 +14,8 @@ const diff = (previous, current) => {
   Object.keys(previousPackages).forEach((key) => {
     changes[key] = {
       previous: previousPackages[key].version,
-      current: "**REMOVED**"
+      current: "**REMOVED**",
+      status: "🗑️"
     };
   });
 
@@ -22,13 +23,15 @@ const diff = (previous, current) => {
     if (!changes[key]) {
       changes[key] = {
         previous: "**NEW**",
-        current: currentPackages[key].version
+        current: currentPackages[key].version,
+        status: "✨"
       };
     } else {
       if (changes[key].previous === currentPackages[key].version) {
         delete changes[key];
       } else {
         changes[key].current = currentPackages[key].version;
+        changes[key].status = "⬆️";
       }
     }
   });
@@ -81,9 +84,9 @@ async function run() {
     console.warn(lockChanges)
 
     const diffsTable = markdownTable([
-      ['Name', 'Previous', 'Current'],
+      ['Name', 'Status', 'Previous', 'Current'],
       ...Object.entries(lockChanges).map(([key, value]) => (
-        [key, value.previous, value.current]
+        ['`' + key + '`', value.status, value.previous, value.current]
       )).sort((a, b) => a[0].localeCompare(b[0]))
     ])
 
