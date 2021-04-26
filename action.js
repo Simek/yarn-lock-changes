@@ -1,14 +1,56 @@
 const core = require('@actions/core');
-// const exec = require('@actions/exec');
 const github = require('@actions/github');
-const markdownTable = require('markdown-table');
 const lockfile = require("@yarnpkg/lockfile");
-const path = require('path');
 const fs = require('fs');
+const path = require('path');
+const { markdownTable } = require('markdown-table');
+const fetch = require('node-fetch');
+
+const diff = (previous, current) => {
+  let changes = {};
+
+  const previousPackages = formatNameAndVersion(previous);
+  const currentPackages = formatNameAndVersion(current);
+
+  Object.keys(previousPackages).forEach((key) => {
+    changes[key] = {
+      previous: previousPackages[key].version,
+      current: "REMOVED"
+    };
+  });
+
+  Object.keys(currentPackages).forEach((key) => {
+    if (!changes[key]) {
+      changes[key] = {
+        previous: "NEW",
+        current: currentPackages[key].version
+      };
+    } else {
+      if (changes[key].previous === currentPackages[key].version) {
+        delete changes[key];
+      } else {
+        changes[key].current = currentPackages[key].version;
+      }
+    }
+  });
+
+  return changes;
+}
+
+const formatNameAndVersion = (obj) => {
+  const packages = {};
+
+  Object.keys(obj.object).forEach((key) => {
+    const names = key.split("@");
+    const name = names[0] === "" ? "@" + names[1] : names[0];
+    packages[name] = { name, version: obj.object[key].version };
+  });
+
+  return packages;
+}
 
 async function run() {
   try {
-    // Auth
     const octokit = github.getOctokit(core.getInput('token'));
     const { owner, repo } = github.context.repo;
 
@@ -27,22 +69,26 @@ async function run() {
 
     // console.log(data)
 
-    const paths = {
-      base: path.resolve(process.cwd(), core.getInput('path'))
+    const lockPath = path.resolve(process.cwd(), core.getInput('path'));
+
+    console.log(lockPath)
+
+    if (!fs.existsSync(lockPath)) {
+      throw new Error(`${lockPath} does not exist!`)
     }
 
-    console.log(paths.base)
-
-    if (!fs.existsSync(paths.base)) {
-      throw new Error(`${paths.base} does not exist!`)
-    }
-
-    const content = await fs.readFileSync(paths.base, { encoding: 'utf8' });
+    const content = await fs.readFileSync(lockPath, { encoding: 'utf8' });
 
     // await exec.exec('node', ['index.js', 'foo=bar']);
-    const out = lockfile.parse(content);
+    const updatedLock = lockfile.parse(content);
+    console.warn(updatedLock)
 
-    console.warn(out)
+    const response = await fetch(`https://raw.githubusercontent.com/${repo.full_name}/master/${core.getInput('path')}`);
+    const masterLock = lockfile.parse(await response.json());
+
+
+    const lockChanges = this.diff(masterLock, updatedLock);
+
 
     // Compose comment
     const diffsTable = markdownTable([
@@ -66,6 +112,7 @@ async function run() {
       body:
         `## \`yarn.lock\` changes
         ${diffsTable}
+        \`\`\`${lockChanges}\`\`\`
         `
     });
 
