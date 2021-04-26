@@ -14,24 +14,24 @@ const diff = (previous, current) => {
   Object.keys(previousPackages).forEach((key) => {
     changes[key] = {
       previous: previousPackages[key].version,
-      current: "**REMOVED**",
-      status: "🗑️"
+      current: "-",
+      status: "🗑️ **REMOVED**"
     };
   });
 
   Object.keys(currentPackages).forEach((key) => {
     if (!changes[key]) {
       changes[key] = {
-        previous: "**NEW**",
+        previous: "-",
         current: currentPackages[key].version,
-        status: "✨"
+        status: "✨ **NEW**"
       };
     } else {
       if (changes[key].previous === currentPackages[key].version) {
         delete changes[key];
       } else {
         changes[key].current = currentPackages[key].version;
-        changes[key].status = "⬆️";
+        changes[key].status = "⬆️ **UPDATED**";
       }
     }
   });
