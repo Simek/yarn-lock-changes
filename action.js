@@ -10,14 +10,8 @@ const path = require('path');
 const GH_RAW_URL = 'https://raw.githubusercontent.com';
 const ASSETS_URL = `${GH_RAW_URL}/Simek/yarn-lock-changes/main/assets`;
 
-const imagesLinks = `
-  [added]: ${ASSETS_URL}/added.svg "Added"
-  [removed]: ${ASSETS_URL}/removed.svg "Removed"
-  [updated]: ${ASSETS_URL}/updated.svg "Updated"
-  [downgraded]: ${ASSETS_URL}/downgraded.svg "Downgraded"
-`;
-
-const getStatusLabel = (status) => `[<sub>![${status}]</sub>](#)`;
+const getStatusLabel = (status) =>
+  `[<sub><img alt="${status.toUpperCase()}" src="${ASSETS_URL}/${status}.svg" height="16" /></sub>](#)`;
 
 const formatNameAndVersion = (obj) =>
   Object.fromEntries(
@@ -111,7 +105,7 @@ const run = async () => {
         owner,
         repo,
         issue_number: number,
-        body: '## `yarn.lock` changes' + '\n' + diffsTable + '\n' + imagesLinks
+        body: '## `yarn.lock` changes' + '\n' + diffsTable
       });
     }
   } catch (error) {
