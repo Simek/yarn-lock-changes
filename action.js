@@ -6,7 +6,7 @@ const path = require('path');
 const { markdownTable } = require('markdown-table');
 const fetch = require('node-fetch');
 
-const diff = (previous, current) => {
+const diffLocks = (previous, current) => {
   const changes = {};
   const previousPackages = formatNameAndVersion(previous);
   const currentPackages = formatNameAndVersion(current);
@@ -39,17 +39,22 @@ const diff = (previous, current) => {
   return changes;
 };
 
-const formatNameAndVersion = (obj) => {
-  const packages = {};
+const formatNameAndVersion = (obj) =>
+  Object.fromEntries(Object.keys(obj.object).map((key) => {
+    const nameParts = key.split('@');
+    const name = nameParts[0] === '' ? '@' + nameParts[1] : nameParts[0];
+    return [name, { name, version: obj.object[key].version }];
+  }))
+;
 
-  Object.keys(obj.object).forEach((key) => {
-    const names = key.split('@');
-    const name = names[0] === '' ? '@' + names[1] : names[0];
-    packages[name] = { name, version: obj.object[key].version };
-  });
-
-  return packages;
-};
+const createTable = (lockChanges) =>
+  markdownTable([
+    ['Name', 'Status', 'Previous', 'Current'],
+    ...Object.entries(lockChanges).map(([key, { status, previous, current }]) =>
+      ['`' + key + '`', status, previous, current]
+    ).sort((a, b) => a[0].localeCompare(b[0]))
+  ])
+;
 
 const run = async () => {
   try {
@@ -77,22 +82,17 @@ const run = async () => {
     }
 
     const masterLock = lockfile.parse(await response.text());
-    const lockChanges = diff(masterLock, updatedLock);
+    const lockChanges = diffLocks(masterLock, updatedLock);
 
-    const diffsTable = markdownTable([
-      ['Name', 'Status', 'Previous', 'Current'],
-      ...Object.entries(lockChanges).map(([key, value]) => (
-        ['`' + key + '`', value.status, value.previous, value.current]
-      )).sort((a, b) => a[0].localeCompare(b[0]))
-    ]);
-
-    await octokit.issues.createComment({
-      owner,
-      repo,
-      issue_number: number,
-      body: '## `yarn.lock` changes' + '\n' + diffsTable
-    });
-
+    if (Object.keys(lockChanges).length) {
+      const diffsTable = createTable(lockChanges);
+      await octokit.issues.createComment({
+        owner,
+        repo,
+        issue_number: number,
+        body: '## `yarn.lock` changes' + '\n' + diffsTable
+      });
+    }
   } catch (error) {
     core.setFailed(error.message);
   }
