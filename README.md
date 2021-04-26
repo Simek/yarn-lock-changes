@@ -1,6 +1,6 @@
 # Yarn Lock Changes
 
-Creates a comment inside Pull Request with the human-readable summary of changes to the `yarn.lock`.
+Creates a comment inside Pull Request with the human-readable summary of the changes to the `yarn.lock` file.
 
 <img alt="Screenshot 2021-04-26 201617" src="https://user-images.githubusercontent.com/719641/116132125-78cadf80-a6cd-11eb-901d-7f3cb6efd1c9.png">
 
@@ -19,5 +19,5 @@ Creates a comment inside Pull Request with the human-readable summary of changes
 
 | Input | Required | Description |
 | --- | --- | --- |
-| `path` | No | Path in repository to the `yarn.lock` file. Default `yarn.lock` (project root). |
+| `path` | No | Path to the `yarn.lock` file in the repository. Default `yarn.lock` (project root). |
 | `token` | **Yes** | GitHub token for the bot, so it can publish a comment in the pull request. |
