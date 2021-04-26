@@ -1,6 +1,7 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
 const lockfile = require('@yarnpkg/lockfile');
+const compareVersions = require('compare-versions');
 const fs = require('fs');
 const { markdownTable } = require('markdown-table');
 const fetch = require('node-fetch');
@@ -24,7 +25,7 @@ const diffLocks = (previous, current) => {
     changes[key] = {
       previous: previousPackages[key].version,
       current: '-',
-      status: '🗑️ **REMOVED**'
+      status: '🗑️ <small>REMOVED</small>'
     };
   });
 
@@ -33,14 +34,18 @@ const diffLocks = (previous, current) => {
       changes[key] = {
         previous: '-',
         current: currentPackages[key].version,
-        status: '✨ **NEW**'
+        status: '✨ <small>ADDED</small>'
       };
     } else {
       if (changes[key].previous === currentPackages[key].version) {
         delete changes[key];
       } else {
         changes[key].current = currentPackages[key].version;
-        changes[key].status = '⬆️ **UPDATED**';
+        if (compareVersions(changes[key].previous, changes[key].current) === 1) {
+          changes[key].status = '⬇️ <small>DOWNGRADED</small>';
+        } else {
+          changes[key].status = '⬆️ <small>UPDATED</small>';
+        }
       }
     }
   });
@@ -49,12 +54,15 @@ const diffLocks = (previous, current) => {
 };
 
 const createTable = (lockChanges) =>
-  markdownTable([
-    ['Name', 'Status', 'Previous', 'Current'],
-    ...Object.entries(lockChanges)
-      .map(([key, { status, previous, current }]) => ['`' + key + '`', status, previous, current])
-      .sort((a, b) => a[0].localeCompare(b[0]))
-  ]);
+  markdownTable(
+    [
+      ['Name', 'Status', 'Previous', 'Current'],
+      ...Object.entries(lockChanges)
+        .map(([key, { status, previous, current }]) => ['`' + key + '`', status, previous, current])
+        .sort((a, b) => a[0].localeCompare(b[0]))
+    ],
+    { align: ['l', 'c', 'c', 'c'], alignDelimiters: false }
+  );
 
 const run = async () => {
   try {
