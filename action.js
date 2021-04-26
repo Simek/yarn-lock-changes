@@ -26,7 +26,7 @@ async function run() {
       pull_number: PRId,
     });
 
-    console.log(data)
+    // console.log(data)
 
     const paths = {
       base: path.resolve(process.cwd(), core.getInput('path'))
