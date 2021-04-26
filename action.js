@@ -54,7 +54,7 @@ async function run() {
     const octokit = github.getOctokit(core.getInput('token'));
     const { owner, repository, repo } = github.context;
 
-    console.warn(github.context)
+    console.warn(github.context.issue.repo)
 
     const PRId = github.context.issue.number;
     if (!PRId) {
@@ -69,7 +69,7 @@ async function run() {
     //   pull_number: PRId,
     // });
 
-    console.log(repository, `https://raw.githubusercontent.com/${repository}/master/${core.getInput('path')}`)
+    console.log(github.context.issue, `https://raw.githubusercontent.com/${repository}/master/${core.getInput('path')}`)
 
     const lockPath = path.resolve(process.cwd(), core.getInput('path'));
 
@@ -87,7 +87,7 @@ async function run() {
 
     // const response = await fetch(`https://raw.githubusercontent.com/${repository}/master/${core.getInput('path')}`);
     const response = await fetch(`https://raw.githubusercontent.com/Simek/wikitaxa/master/${core.getInput('path')}`);
-    const masterLock = lockfile.parse(await response.json());
+    const masterLock = lockfile.parse(await response.text());
 
 
     const lockChanges = this.diff(masterLock, updatedLock);
