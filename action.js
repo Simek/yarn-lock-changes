@@ -14,7 +14,9 @@ async function run() {
     const { owner, repo } = github.context.repo;
 
     const PRId = github.context.issue.number;
-    if (!PRId) throw new Error('Cannot find the PR!');
+    if (!PRId) {
+      throw new Error('Cannot find the PR!');
+    }
 
     // Decide if run
 
@@ -36,10 +38,10 @@ async function run() {
       throw new Error(`${paths.base} does not exist!`)
     }
 
-    const lockContent = fs.readFileSync(paths.base, 'utf8')
+    const content = await fs.readFileSync(paths.base, 'utf-8');
 
     // await exec.exec('node', ['index.js', 'foo=bar']);
-    const out = lockfile.parse(lockContent);
+    const out = lockfile.parse(content);
 
     console.warn(out)
 
@@ -58,7 +60,6 @@ async function run() {
     ])
 
     // Publish comment
-
     await octokit.issues.createComment({
       owner,
       repo,
@@ -68,6 +69,7 @@ async function run() {
         ${diffsTable}
         `
     });
+
   } catch (error) {
     core.setFailed(error.message);
   }
