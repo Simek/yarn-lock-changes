@@ -3,13 +3,14 @@ on: [pull_request]
 jobs:
   test_action:
     runs-on: ubuntu-latest
-    name: A job to say hello
+    name: Yarn Lock Changes
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Yarn diff
+      - name: Yarn Diff
         # Uses an action in the root directory
         uses: ./
         id: hello
         with:
           path: 'yarn.lock'
+          token: ${{ secrets.GITHUB_TOKEN }}
