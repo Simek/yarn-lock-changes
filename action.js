@@ -11,7 +11,7 @@ const GH_RAW_URL = 'https://raw.githubusercontent.com';
 const ASSETS_URL = `${GH_RAW_URL}/Simek/yarn-lock-changes/main/assets`;
 
 const getStatusLabel = (status) =>
-  `<sub><img alt="${status.toUpperCase()}" src="${ASSETS_URL}/${status}.svg" height="16" /></sub>`;
+  `[<sub><img alt="${status.toUpperCase()}" src="${ASSETS_URL}/${status}.svg" height="16" /></sub>](#)`;
 
 const formatNameAndVersion = (obj) =>
   Object.fromEntries(
