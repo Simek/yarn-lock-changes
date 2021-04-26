@@ -75,24 +75,18 @@ async function run() {
     const lockChanges = diff(masterLock, updatedLock);
     console.warn(lockChanges)
 
-    // Compose comment
     const diffsTable = markdownTable([
       ['Name', 'Previous', 'Current'],
-      Object.entries(lockChanges).map(([key, value]) => (
+      ...Object.entries(lockChanges).map(([key, value]) => (
         [key, value.previous, value.current]
       ))
     ])
 
-    // Publish comment
     await octokit.issues.createComment({
       owner,
       repo,
       issue_number: number,
-      body:
-        `
-        ## \`yarn.lock\` changes
-        ${diffsTable}
-        `
+      body: '## `yarn.lock` changes' + diffsTable
     });
 
   } catch (error) {
