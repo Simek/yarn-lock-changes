@@ -8,7 +8,8 @@ Creates a comment inside Pull Request with the human-readable summary of changes
 
 ```yml
 - name: Yarn Lock Changes
-  uses: Simek/yarn-lock-changes@main # for now, use `main` before the stable release will be published as `v1`
+  # for now, use `main` before the stable release will be published as `v1`
+  uses: Simek/yarn-lock-changes@main 
   with:
     path: 'yarn.lock'
     token: ${{ secrets.GITHUB_TOKEN }}
