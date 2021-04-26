@@ -8,6 +8,9 @@ inputs:
     description: 'Path to the `yarn.lock` file'
     required: false
     default: 'yarn.lock'
+  token:
+    description: 'GitHub Auth token'
+    required: true
 runs:
   using: 'node12'
   main: 'dist/index.js'

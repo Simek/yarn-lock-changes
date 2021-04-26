@@ -7,13 +7,13 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "compile": "ncc build action.js --license licenses.txt"
+    "compile": "ncc build action.js -m --no-source-map-register"
   },
   "dependencies": {
     "@actions/core": "^1.2.6",
     "@actions/exec": "^1.0.4",
     "@actions/github": "^4.0.0",
-    "@ksmakey/yarn-lock-diff": "^0.2.1",
+    "@yarnpkg/lockfile": "^1.1.0",
     "markdown-table": "^3.0.0"
   }
 }
