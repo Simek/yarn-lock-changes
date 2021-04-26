@@ -4,6 +4,8 @@ const github = require('@actions/github');
 // const yarnDiff = require('@ksmakey/yarn-lock-diff');
 const markdownTable = require('markdown-table');
 const lockfile = require("@yarnpkg/lockfile");
+const path = require('path');
+const fs = require('fs');
 
 async function run() {
   try {
@@ -26,8 +28,22 @@ async function run() {
 
     console.log(data)
 
+    const paths = {
+      base: path.resolve(process.cwd(), core.getInput('path'))
+    }
+
+    console.log(paths.base)
+
+    if (!fs.existsSync(paths.base)) {
+      throw new Error(`${paths.base} does not exist!`)
+    }
+
+    const lockContent = await fs.readFile(paths.base, 'utf8')
+
     // await exec.exec('node', ['index.js', 'foo=bar']);
-    const out = lockfile.parse();
+    const out = lockfile.parse(lockContent);
+
+    console.warn(out)
 
     // Compose comment
     const diffsTable = markdownTable([
