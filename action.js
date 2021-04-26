@@ -54,12 +54,15 @@ const diffLocks = (previous, current) => {
 };
 
 const createTable = (lockChanges) =>
-  markdownTable([
-    ['Name', 'Status', 'Previous', 'Current'],
-    ...Object.entries(lockChanges)
-      .map(([key, { status, previous, current }]) => ['`' + key + '`', status, previous, current])
-      .sort((a, b) => a[0].localeCompare(b[0]))
-  ]);
+  markdownTable(
+    [
+      ['Name', 'Status', 'Previous', 'Current'],
+      ...Object.entries(lockChanges)
+        .map(([key, { status, previous, current }]) => ['`' + key + '`', status, previous, current])
+        .sort((a, b) => a[0].localeCompare(b[0]))
+    ],
+    { align: ['l', 'c', 'c', 'c'], alignDelimiters: false }
+  );
 
 const run = async () => {
   try {
