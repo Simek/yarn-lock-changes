@@ -101,7 +101,8 @@ const run = async () => {
     const masterLock = lockfile.parse(Base64.decode(masterLockResponse.data.content));
     const lockChanges = diffLocks(masterLock, updatedLock);
 
-    console.log(masterLock, typeof updateComment);
+    console.log(lockChanges, updatedLock);
+    console.log(Object.keys(lockChanges).length, updateComment === 'true');
 
     if (Object.keys(lockChanges).length) {
       const diffsTable = createTable(lockChanges);
@@ -128,7 +129,6 @@ const run = async () => {
           await octokit.issues.updateComment({
             owner,
             repo,
-            issue_number: number,
             comment_id: commentId,
             body: commentBody
           });
