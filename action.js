@@ -78,7 +78,13 @@ const run = async () => {
     const { owner, repo, number } = github.context.issue;
     const { default_branch, temp_clone_token } = github.context.payload.repository;
 
-    console.log(github.context.issue, github.context.repo)
+    const x = await octokit.request(`GET /repos/{owner}/{repo}/branches/{branch}`, {
+      owner,
+      repo,
+      branch: default_branch
+    })
+
+    console.log(x)
 
     if (!number) {
       throw new Error('Cannot find the PR!');
