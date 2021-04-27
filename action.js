@@ -3,8 +3,8 @@ const github = require('@actions/github');
 const lockfile = require('@yarnpkg/lockfile');
 const compareVersions = require('compare-versions');
 const fs = require('fs');
+const { Base64 } = require('js-base64');
 const { markdownTable } = require('markdown-table');
-const fetch = require('node-fetch');
 const path = require('path');
 
 const GH_RAW_URL = 'https://raw.githubusercontent.com';
@@ -76,7 +76,6 @@ const run = async () => {
     const inputPath = core.getInput('path');
 
     const { owner, repo, number } = github.context.issue;
-    const { default_branch, temp_clone_token } = github.context.payload.repository;
 
     if (!number) {
       throw new Error('Cannot find the PR!');
@@ -91,15 +90,13 @@ const run = async () => {
     const content = await fs.readFileSync(lockPath, { encoding: 'utf8' });
     const updatedLock = lockfile.parse(content);
 
-    const response = await fetch(
-      `${GH_RAW_URL}/${owner}/${repo}/${default_branch}/${inputPath}?token=${temp_clone_token}`
-    );
+    const masterLockResponse = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
+      owner,
+      repo,
+      path: inputPath
+    });
 
-    if (!response) {
-      throw new Error('Cannot fetch current lock file!');
-    }
-
-    const masterLock = lockfile.parse(await response.text());
+    const masterLock = lockfile.parse(Base64.decode(masterLockResponse.data.content));
     const lockChanges = diffLocks(masterLock, updatedLock);
 
     if (Object.keys(lockChanges).length) {

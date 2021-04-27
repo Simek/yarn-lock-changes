@@ -15,8 +15,8 @@
     "@actions/github": "^4.0.0",
     "@yarnpkg/lockfile": "^1.1.0",
     "compare-versions": "^3.6.0",
-    "markdown-table": "^3.0.0",
-    "node-fetch": "^2.6.1"
+    "js-base64": "^3.6.0",
+    "markdown-table": "^3.0.0"
   },
   "devDependencies": {
     "eslint": "^7.25.0",
