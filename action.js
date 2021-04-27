@@ -113,6 +113,8 @@ const run = async () => {
           per_page: 100
         });
 
+        console.log(currentComments);
+
         const commentId = currentComments
           .filter(
             (comment) =>
@@ -120,7 +122,7 @@ const run = async () => {
           )
           .map((comment) => comment.html_url.split('-')[1])[0];
 
-        console.log(commentId, currentComments);
+        console.log(commentId);
 
         if (commentId) {
           await octokit.issues.updateComment({
