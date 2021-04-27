@@ -113,12 +113,10 @@ const run = async () => {
           per_page: 100
         });
 
-        console.log(currentComments.data.map(comment => comment.user))
-
         const commentId = currentComments.data
           .filter(
             (comment) =>
-              comment.user.login === 'github-actions' && comment.body.startsWith(COMMENT_HEADER)
+              comment.user.login === 'github-actions[bot]' && comment.body.startsWith(COMMENT_HEADER)
           )
           .map((comment) => comment.id)[0];
 
