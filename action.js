@@ -117,6 +117,10 @@ const run = async () => {
           per_page: 100
         });
 
+        if (!currentComments || !currentComments.data) {
+          throw new Error('💥 Cannot fetch PR comments, aborting!');
+        }
+
         const commentId = currentComments.data
           .filter(
             (comment) =>
