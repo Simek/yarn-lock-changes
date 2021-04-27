@@ -115,8 +115,7 @@ const run = async () => {
 
         console.log(currentComments);
 
-        const commentId = currentComments
-          .filter(
+        const commentId = currentComments.data.filter(
             (comment) =>
               comment.user.login === 'github-actions' && comment.body.includes(COMMENT_HEADER)
           )
