@@ -9,6 +9,7 @@ const path = require('path');
 
 const GH_RAW_URL = 'https://raw.githubusercontent.com';
 const ASSETS_URL = `${GH_RAW_URL}/Simek/yarn-lock-changes/main/assets`;
+const COMMENT_HEADER = '## `yarn.lock` changes';
 
 const getStatusLabel = (status) =>
   `[<sub><img alt="${status.toUpperCase()}" src="${ASSETS_URL}/${status}.svg" height="16" /></sub>](#)`;
@@ -74,17 +75,18 @@ const run = async () => {
   try {
     const octokit = github.getOctokit(core.getInput('token'));
     const inputPath = core.getInput('path');
+    const updateComment = core.getInput('updateComment');
 
     const { owner, repo, number } = github.context.issue;
 
     if (!number) {
-      throw new Error('Cannot find the PR!');
+      throw new Error('💥 Cannot find the PR, aborting!');
     }
 
     const lockPath = path.resolve(process.cwd(), inputPath);
 
     if (!fs.existsSync(lockPath)) {
-      throw new Error(`${lockPath} does not exist!`);
+      throw new Error('💥 It looks like lock does not exist in this PR, aborting!');
     }
 
     const content = await fs.readFileSync(lockPath, { encoding: 'utf8' });
@@ -96,17 +98,60 @@ const run = async () => {
       path: inputPath
     });
 
+    if (!masterLockResponse || !masterLockResponse.data || !masterLockResponse.data.content) {
+      throw new Error('💥 Cannot fetch base lock, aborting!');
+    }
+
     const masterLock = lockfile.parse(Base64.decode(masterLockResponse.data.content));
     const lockChanges = diffLocks(masterLock, updatedLock);
 
     if (Object.keys(lockChanges).length) {
       const diffsTable = createTable(lockChanges);
-      await octokit.issues.createComment({
-        owner,
-        repo,
-        issue_number: number,
-        body: '## `yarn.lock` changes' + '\n' + diffsTable
-      });
+      const commentBody = COMMENT_HEADER + '\n' + diffsTable;
+
+      if (updateComment === 'true') {
+        const currentComments = await octokit.issues.listComments({
+          owner,
+          repo,
+          issue_number: number,
+          per_page: 100
+        });
+
+        if (!currentComments || !currentComments.data) {
+          throw new Error('💥 Cannot fetch PR comments, aborting!');
+        }
+
+        const commentId = currentComments.data
+          .filter(
+            (comment) =>
+              comment.user.login === 'github-actions[bot]' &&
+              comment.body.startsWith(COMMENT_HEADER)
+          )
+          .map((comment) => comment.id)[0];
+
+        if (commentId) {
+          await octokit.issues.updateComment({
+            owner,
+            repo,
+            comment_id: commentId,
+            body: commentBody
+          });
+        } else {
+          await octokit.issues.createComment({
+            owner,
+            repo,
+            issue_number: number,
+            body: commentBody
+          });
+        }
+      } else {
+        await octokit.issues.createComment({
+          owner,
+          repo,
+          issue_number: number,
+          body: commentBody
+        });
+      }
     }
   } catch (error) {
     core.setFailed(error.message);
