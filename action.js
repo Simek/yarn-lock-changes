@@ -113,6 +113,8 @@ const run = async () => {
           per_page: 100
         });
 
+        console.log(currentComments.data.map(comment => comment.user))
+
         const commentId = currentComments.data
           .filter(
             (comment) =>
