@@ -11,6 +11,10 @@ inputs:
   token:
     description: 'GitHub token for the bot, so it can publish a comment in the pull request.'
     required: true
+  updateComment:
+    description: 'Should the bot update the summary comment on each new commit.'
+    required: false
+    default: 'true'
 runs:
   using: 'node12'
   main: 'dist/index.js'
