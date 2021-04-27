@@ -6,6 +6,7 @@ const fs = require('fs');
 const { markdownTable } = require('markdown-table');
 const fetch = require('node-fetch');
 const path = require('path');
+const {Base64} = require('js-base64');
 
 const GH_RAW_URL = 'https://raw.githubusercontent.com';
 const ASSETS_URL = `${GH_RAW_URL}/Simek/yarn-lock-changes/main/assets`;
@@ -78,14 +79,6 @@ const run = async () => {
     const { owner, repo, number } = github.context.issue;
     const { default_branch, temp_clone_token } = github.context.payload.repository;
 
-    const x = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
-      owner,
-      repo,
-      path: inputPath
-    });
-
-    console.log(x)
-
     if (!number) {
       throw new Error('Cannot find the PR!');
     }
@@ -99,15 +92,23 @@ const run = async () => {
     const content = await fs.readFileSync(lockPath, { encoding: 'utf8' });
     const updatedLock = lockfile.parse(content);
 
-    const response = await fetch(
-      `${GH_RAW_URL}/${owner}/${repo}/${default_branch}/${inputPath}?token=${temp_clone_token}`
-    );
+    // const response = await fetch(
+    //   `${GH_RAW_URL}/${owner}/${repo}/${default_branch}/${inputPath}?token=${temp_clone_token}`
+    // );
+    //
+    // if (!response) {
+    //   throw new Error('Cannot fetch current lock file!');
+    // }
 
-    if (!response) {
-      throw new Error('Cannot fetch current lock file!');
-    }
+    const masterLockResponse = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
+      owner,
+      repo,
+      path: inputPath
+    });
 
-    const masterLock = lockfile.parse(await response.text());
+    console.log(Base64.decode(masterLockResponse.data.content))
+
+    const masterLock = lockfile.parse(Base64.decode(masterLockResponse.data.content));
     const lockChanges = diffLocks(masterLock, updatedLock);
 
     if (Object.keys(lockChanges).length) {
