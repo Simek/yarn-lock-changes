@@ -120,6 +120,8 @@ const run = async () => {
           )
           .map((comment) => comment.id)[0];
 
+        console.warn(commentId, currentComments)
+
         if (commentId) {
           await octokit.issues.updateComment({
             owner,
