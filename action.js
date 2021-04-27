@@ -101,7 +101,7 @@ const run = async () => {
     const masterLock = lockfile.parse(Base64.decode(masterLockResponse.data.content));
     const lockChanges = diffLocks(masterLock, updatedLock);
 
-    console.log(lockChanges, updateComment);
+    console.log(masterLock, typeof updateComment);
 
     if (Object.keys(lockChanges).length) {
       const diffsTable = createTable(lockChanges);
