@@ -105,7 +105,7 @@ const run = async () => {
       const diffsTable = createTable(lockChanges);
       const commentBody = COMMENT_HEADER + '\n' + diffsTable;
 
-      if (updateComment) {
+      if (updateComment === 'true') {
         const currentComments = await octokit.issues.listComments({
           owner,
           repo,
