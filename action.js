@@ -10,6 +10,9 @@ const path = require('path');
 const GH_RAW_URL = 'https://raw.githubusercontent.com';
 const ASSETS_URL = `${GH_RAW_URL}/Simek/yarn-lock-changes/main/assets`;
 
+const getGitHubRawURL = (accessToken) =>
+  `https://${accessToken ? `${accessToken}@` : ''}raw.githubusercontent.com`;
+
 const getStatusLabel = (status) =>
   `[<sub><img alt="${status.toUpperCase()}" src="${ASSETS_URL}/${status}.svg" height="16" /></sub>](#)`;
 
@@ -74,6 +77,8 @@ const run = async () => {
   try {
     const octokit = github.getOctokit(core.getInput('token'));
     const inputPath = core.getInput('path');
+    const accessToken = core.getInput('accessToken');
+
     const { owner, repo, number } = github.context.issue;
     const { default_branch } = github.context.payload.repository;
 
@@ -90,7 +95,9 @@ const run = async () => {
     const content = await fs.readFileSync(lockPath, { encoding: 'utf8' });
     const updatedLock = lockfile.parse(content);
 
-    const response = await fetch(`${GH_RAW_URL}/${owner}/${repo}/${default_branch}/${inputPath}`);
+    const response = await fetch(
+      `${getGitHubRawURL(accessToken)}/${owner}/${repo}/${default_branch}/${inputPath}`
+    );
 
     if (!response) {
       throw new Error('Cannot fetch current lock file!');
