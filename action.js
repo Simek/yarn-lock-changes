@@ -10,9 +10,6 @@ const path = require('path');
 const GH_RAW_URL = 'https://raw.githubusercontent.com';
 const ASSETS_URL = `${GH_RAW_URL}/Simek/yarn-lock-changes/main/assets`;
 
-const getGitHubRawURL = (accessToken) =>
-  `https://${accessToken ? `${accessToken}@` : ''}raw.githubusercontent.com`;
-
 const getStatusLabel = (status) =>
   `[<sub><img alt="${status.toUpperCase()}" src="${ASSETS_URL}/${status}.svg" height="16" /></sub>](#)`;
 
@@ -77,10 +74,9 @@ const run = async () => {
   try {
     const octokit = github.getOctokit(core.getInput('token'));
     const inputPath = core.getInput('path');
-    const accessToken = core.getInput('accessToken');
 
     const { owner, repo, number } = github.context.issue;
-    const { default_branch } = github.context.payload.repository;
+    const { default_branch, temp_clone_token } = github.context.payload.repository;
 
     if (!number) {
       throw new Error('Cannot find the PR!');
@@ -96,7 +92,7 @@ const run = async () => {
     const updatedLock = lockfile.parse(content);
 
     const response = await fetch(
-      `${getGitHubRawURL(accessToken)}/${owner}/${repo}/${default_branch}/${inputPath}`
+      `${GH_RAW_URL}/${owner}/${repo}/${default_branch}/${inputPath}?token=${temp_clone_token}`
     );
 
     if (!response) {
