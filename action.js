@@ -78,11 +78,11 @@ const run = async () => {
     const { owner, repo, number } = github.context.issue;
     const { default_branch, temp_clone_token } = github.context.payload.repository;
 
-    const x = await octokit.request(`GET /repos/{owner}/{repo}/branches/{branch}`, {
+    const x = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
       owner,
       repo,
-      branch: default_branch
-    })
+      path: inputPath
+    });
 
     console.log(x)
 
