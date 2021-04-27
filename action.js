@@ -113,15 +113,12 @@ const run = async () => {
           per_page: 100
         });
 
-        console.log(currentComments);
-
-        const commentId = currentComments.data.filter(
+        const commentId = currentComments.data
+          .filter(
             (comment) =>
-              comment.user.login === 'github-actions' && comment.body.includes(COMMENT_HEADER)
+              comment.user.login === 'github-actions' && comment.body.startsWith(COMMENT_HEADER)
           )
-          .map((comment) => comment.html_url.split('-')[1])[0];
-
-        console.log(commentId);
+          .map((comment) => comment.id)[0];
 
         if (commentId) {
           await octokit.issues.updateComment({
