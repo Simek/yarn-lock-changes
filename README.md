@@ -19,6 +19,5 @@ Creates a comment inside Pull Request with the human-readable summary of the cha
 
 | Input | Required | Description |
 | --- | --- | --- |
-| `accessToken` | No | Personal access token to give action an access to private repository. Read more: https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token |
 | `path` | No | Path to the `yarn.lock` file in the repository. Default `yarn.lock` (project root). |
 | `token` | **Yes** | GitHub token for the bot, so it can publish a comment in the pull request. |

@@ -4,9 +4,6 @@ branding:
   icon: 'copy'
   color: 'purple'
 inputs:
-  accessToken:
-    description: 'Personal access token to give action an access to private repository.'
-    required: false
   path:
     description: 'Path to the `yarn.lock` file in the repository.'
     required: false
