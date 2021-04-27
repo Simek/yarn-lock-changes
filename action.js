@@ -80,13 +80,13 @@ const run = async () => {
     const { owner, repo, number } = github.context.issue;
 
     if (!number) {
-      throw new Error('Cannot find the PR!');
+      throw new Error('💥 Cannot find the PR, aborting!');
     }
 
     const lockPath = path.resolve(process.cwd(), inputPath);
 
     if (!fs.existsSync(lockPath)) {
-      throw new Error(`${lockPath} does not exist!`);
+      throw new Error('💥 It looks like lock does not exist in this PR, aborting!');
     }
 
     const content = await fs.readFileSync(lockPath, { encoding: 'utf8' });
@@ -97,6 +97,10 @@ const run = async () => {
       repo,
       path: inputPath
     });
+
+    if (!masterLockResponse || !masterLockResponse.data || !masterLockResponse.data.content) {
+      throw new Error('💥 Cannot fetch base lock, aborting!');
+    }
 
     const masterLock = lockfile.parse(Base64.decode(masterLockResponse.data.content));
     const lockChanges = diffLocks(masterLock, updatedLock);
@@ -116,11 +120,10 @@ const run = async () => {
         const commentId = currentComments.data
           .filter(
             (comment) =>
-              comment.user.login === 'github-actions[bot]' && comment.body.startsWith(COMMENT_HEADER)
+              comment.user.login === 'github-actions[bot]' &&
+              comment.body.startsWith(COMMENT_HEADER)
           )
           .map((comment) => comment.id)[0];
-
-        console.warn(commentId, currentComments)
 
         if (commentId) {
           await octokit.issues.updateComment({
