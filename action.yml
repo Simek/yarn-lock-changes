@@ -5,14 +5,14 @@ branding:
   color: 'purple'
 inputs:
   path:
-    description: 'Path to the `yarn.lock` file in the repository.'
+    description: 'Path to the `yarn.lock` file in the repository. Default value points to the file at project root.'
     required: false
     default: 'yarn.lock'
   token:
     description: 'GitHub token for the bot, so it can publish a comment in the pull request.'
     required: true
   updateComment:
-    description: 'Should the bot update the summary comment on each new commit.'
+    description: 'Should the bot update the summary comment. If value is other than default, bot will post new comment on each new commit.'
     required: false
     default: 'true'
 runs:
