@@ -78,7 +78,7 @@ const run = async () => {
     const { owner, repo, number } = github.context.issue;
     const { default_branch, temp_clone_token } = github.context.payload.repository;
 
-    console.log(Object.keys(github.context))
+    console.log(github.context.issue, github.context.repo)
 
     if (!number) {
       throw new Error('Cannot find the PR!');
