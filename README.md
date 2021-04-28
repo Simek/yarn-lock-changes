@@ -2,7 +2,15 @@
 
 Creates a comment inside Pull Request with the human-readable summary of the changes to the `yarn.lock` file.
 
-<img alt="Screenshot 2021-04-26 201617" src="https://user-images.githubusercontent.com/719641/116132125-78cadf80-a6cd-11eb-901d-7f3cb6efd1c9.png">
+## Preview
+
+### Short list of changes
+
+<img alt="Screenshot 2021-04-28 120655" src="https://user-images.githubusercontent.com/719641/116386618-3f53ba80-a81a-11eb-9438-6601d401f880.png">
+
+### Long list of changes
+
+<img alt="Screenshot 2021-04-28 115019" src="https://user-images.githubusercontent.com/719641/116385385-09620680-a819-11eb-857c-113f9048d856.png">
 
 ## Usage
 
