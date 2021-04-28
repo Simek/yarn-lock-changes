@@ -14,7 +14,7 @@ const COMMENT_HEADER = '## `yarn.lock` changes';
 const getStatusLabel = (status) =>
   `[<sub><img alt="${status.toUpperCase()}" src="${ASSETS_URL}/${status}.svg" height="16" /></sub>](#)`;
 
-const formatNameAndVersion = (obj) =>
+const formatEntry = (obj) =>
   Object.fromEntries(
     Object.keys(obj.object).map((key) => {
       const nameParts = key.split('@');
@@ -25,8 +25,8 @@ const formatNameAndVersion = (obj) =>
 
 const diffLocks = (previous, current) => {
   const changes = {};
-  const previousPackages = formatNameAndVersion(previous);
-  const currentPackages = formatNameAndVersion(current);
+  const previousPackages = formatEntry(previous);
+  const currentPackages = formatEntry(current);
 
   Object.keys(previousPackages).forEach((key) => {
     changes[key] = {
@@ -76,6 +76,7 @@ const run = async () => {
     const octokit = github.getOctokit(core.getInput('token'));
     const inputPath = core.getInput('path');
     const updateComment = core.getInput('updateComment');
+    const collapsibleThreshold = parseInt(core.getInput('collapsibleThreshold'));
 
     const { owner, repo, number } = github.context.issue;
 
@@ -104,10 +105,17 @@ const run = async () => {
 
     const masterLock = lockfile.parse(Base64.decode(masterLockResponse.data.content));
     const lockChanges = diffLocks(masterLock, updatedLock);
+    const lockChangesCount = Object.keys(lockChanges).length;
 
-    if (Object.keys(lockChanges).length) {
+    if (lockChangesCount) {
       const diffsTable = createTable(lockChanges);
-      const commentBody = COMMENT_HEADER + '\n' + diffsTable;
+      const collapsed = lockChangesCount >= collapsibleThreshold;
+
+      const commentBody = `${COMMENT_HEADER}\n
+        <details${collapsed ? '' : ' open'}>
+        <summary>Click to toggle table visibility</summary>\n
+        ${diffsTable}\n
+        </details>`;
 
       if (updateComment === 'true') {
         const currentComments = await octokit.issues.listComments({

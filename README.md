@@ -19,6 +19,7 @@ Creates a comment inside Pull Request with the human-readable summary of the cha
 
 | Input | Required | Default | Description |
 | --- | :---: | :---: | --- |
+| `collapsibleThreshold` | No | `'20'` | Number of lock changes, which will result in collapsed comment content. |
 | `path` | No | `'yarn.lock'` | Path to the `yarn.lock` file in the repository. Default value points to the file at project root. |
 | `token` | **Yes** | - | GitHub token for the bot, so it can publish a comment in the pull request. |
 | `updateComment` | No | `'true'` | Should the bot update the summary comment. If value is other than default, bot will post new comment on each new commit. |
