@@ -14,7 +14,7 @@ const COMMENT_HEADER = '## `yarn.lock` changes';
 const getStatusLabel = (status) =>
   `[<sub><img alt="${status.toUpperCase()}" src="${ASSETS_URL}/${status}.svg" height="16" /></sub>](#)`;
 
-const formatNameAndVersion = (obj) =>
+const formatEntry = (obj) =>
   Object.fromEntries(
     Object.keys(obj.object).map((key) => {
       const nameParts = key.split('@');
@@ -25,14 +25,14 @@ const formatNameAndVersion = (obj) =>
 
 const diffLocks = (previous, current) => {
   const changes = {};
-  const previousPackages = formatNameAndVersion(previous);
-  const currentPackages = formatNameAndVersion(current);
+  const previousPackages = formatEntry(previous);
+  const currentPackages = formatEntry(current);
 
   Object.keys(previousPackages).forEach((key) => {
     changes[key] = {
       previous: previousPackages[key].version,
       current: '-',
-      status: getStatusLabel('removed')
+      status: 'removed'
     };
   });
 
@@ -41,7 +41,7 @@ const diffLocks = (previous, current) => {
       changes[key] = {
         previous: '-',
         current: currentPackages[key].version,
-        status: getStatusLabel('added')
+        status: 'added'
       };
     } else {
       if (changes[key].previous === currentPackages[key].version) {
@@ -49,9 +49,9 @@ const diffLocks = (previous, current) => {
       } else {
         changes[key].current = currentPackages[key].version;
         if (compareVersions(changes[key].previous, changes[key].current) === 1) {
-          changes[key].status = getStatusLabel('downgraded');
+          changes[key].status = 'downgraded';
         } else {
-          changes[key].status = getStatusLabel('updated');
+          changes[key].status = 'updated';
         }
       }
     }
@@ -65,10 +65,35 @@ const createTable = (lockChanges) =>
     [
       ['Name', 'Status', 'Previous', 'Current'],
       ...Object.entries(lockChanges)
-        .map(([key, { status, previous, current }]) => ['`' + key + '`', status, previous, current])
+        .map(([key, { status, previous, current }]) => [
+          '`' + key + '`',
+          getStatusLabel(status),
+          previous,
+          current
+        ])
         .sort((a, b) => a[0].localeCompare(b[0]))
     ],
     { align: ['l', 'c', 'c', 'c'], alignDelimiters: false }
+  );
+
+const countStatuses = (lockChanges, statusToCount) =>
+  Object.values(lockChanges).filter(({ status }) => status === statusToCount).length;
+
+const createSummaryRow = (lockChanges, status) => {
+  const statusCount = countStatuses(lockChanges, status);
+  return statusCount ? [getStatusLabel(status), statusCount] : undefined;
+};
+
+const createSummary = (lockChanges) =>
+  markdownTable(
+    [
+      ['Status', 'Count'],
+      createSummaryRow(lockChanges, 'added'),
+      createSummaryRow(lockChanges, 'updated'),
+      createSummaryRow(lockChanges, 'downgraded'),
+      createSummaryRow(lockChanges, 'removed')
+    ].filter(Boolean),
+    { align: ['l', 'c'], alignDelimiters: false }
   );
 
 const run = async () => {
@@ -76,6 +101,7 @@ const run = async () => {
     const octokit = github.getOctokit(core.getInput('token'));
     const inputPath = core.getInput('path');
     const updateComment = core.getInput('updateComment');
+    const collapsibleThreshold = parseInt(core.getInput('collapsibleThreshold'));
 
     const { owner, repo, number } = github.context.issue;
 
@@ -104,10 +130,26 @@ const run = async () => {
 
     const masterLock = lockfile.parse(Base64.decode(masterLockResponse.data.content));
     const lockChanges = diffLocks(masterLock, updatedLock);
+    const lockChangesCount = Object.keys(lockChanges).length;
 
-    if (Object.keys(lockChanges).length) {
+    if (lockChangesCount) {
       const diffsTable = createTable(lockChanges);
-      const commentBody = COMMENT_HEADER + '\n' + diffsTable;
+      const collapsed = lockChangesCount >= collapsibleThreshold;
+
+      const changesSummary = collapsed ? '### Summary\n' + createSummary(lockChanges) : '';
+
+      const commentBody =
+        COMMENT_HEADER +
+        '\n' +
+        changesSummary +
+        '\n' +
+        '<details' +
+        (collapsed ? '' : ' open') +
+        '>\n' +
+        '<summary>Click to toggle table visibility</summary>\n<br/>\n\n' +
+        diffsTable +
+        '\n\n' +
+        '</details>';
 
       if (updateComment === 'true') {
         const currentComments = await octokit.issues.listComments({
