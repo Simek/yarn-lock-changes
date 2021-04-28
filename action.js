@@ -146,7 +146,7 @@ const run = async () => {
         '<details' +
         (collapsed ? '' : ' open') +
         '>\n' +
-        '<summary>Click to toggle table visibility</summary>\n\n' +
+        '<summary>Click to toggle table visibility</summary>\n<br/>\n\n' +
         diffsTable +
         '\n\n' +
         '</details>';
