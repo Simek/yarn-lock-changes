@@ -136,7 +136,7 @@ const run = async () => {
       const diffsTable = createTable(lockChanges);
       const collapsed = lockChangesCount >= collapsibleThreshold;
 
-      const changesSummary = collapsed ? '#### Summary\n' + createSummary(lockChanges) : '';
+      const changesSummary = collapsed ? '### Summary\n' + createSummary(lockChanges) : '';
 
       const commentBody =
         COMMENT_HEADER +
