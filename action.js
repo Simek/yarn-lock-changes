@@ -111,6 +111,8 @@ const run = async () => {
       const diffsTable = createTable(lockChanges);
       const collapsed = lockChangesCount >= collapsibleThreshold;
 
+      console.log(lockChangesCount, collapsibleThreshold);
+
       const commentBody =
         COMMENT_HEADER +
         '\n' +
@@ -121,6 +123,8 @@ const run = async () => {
         diffsTable +
         '\n\n' +
         '</details>';
+
+      console.log(commentBody);
 
       if (updateComment === 'true') {
         const currentComments = await octokit.issues.listComments({
@@ -141,6 +145,8 @@ const run = async () => {
               comment.body.startsWith(COMMENT_HEADER)
           )
           .map((comment) => comment.id)[0];
+
+        console.log(commentId, currentComments.data);
 
         if (commentId) {
           await octokit.issues.updateComment({
