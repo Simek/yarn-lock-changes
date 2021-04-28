@@ -71,6 +71,26 @@ const createTable = (lockChanges) =>
     { align: ['l', 'c', 'c', 'c'], alignDelimiters: false }
   );
 
+const countStatuses = (lockChanges, statusToCount) =>
+  Object.values(lockChanges).filter(({ status }) => status === statusToCount).length;
+
+const createSummaryRow = (lockChanges, status) => {
+  const statusCount = countStatuses(lockChanges, status);
+  return statusCount ? [getStatusLabel(status), statusCount] : undefined;
+};
+
+const createSummary = (lockChanges) =>
+  markdownTable(
+    [
+      ['Status', 'Count'],
+      createSummaryRow(lockChanges, 'added'),
+      createSummaryRow(lockChanges, 'updated'),
+      createSummaryRow(lockChanges, 'downgraded'),
+      createSummaryRow(lockChanges, 'removed')
+    ].filter(Boolean),
+    { align: ['l', 'c'], alignDelimiters: false }
+  );
+
 const run = async () => {
   try {
     const octokit = github.getOctokit(core.getInput('token'));
@@ -111,20 +131,20 @@ const run = async () => {
       const diffsTable = createTable(lockChanges);
       const collapsed = lockChangesCount >= collapsibleThreshold;
 
-      console.log(lockChangesCount, collapsibleThreshold);
+      const changesSummary = collapsed ? '#### Summary\n' + createSummary(lockChanges) : '';
 
       const commentBody =
         COMMENT_HEADER +
         '\n' +
+        changesSummary +
+        '\n' +
         '<details' +
         (collapsed ? '' : ' open') +
         '>\n' +
-        '<summary>Click to toggle table visibility</summary>\n\n' +
+        '<summary>Click to toggle table visibility</summary>\n\n<br/>' +
         diffsTable +
         '\n\n' +
         '</details>';
-
-      console.log(commentBody);
 
       if (updateComment === 'true') {
         const currentComments = await octokit.issues.listComments({
@@ -145,8 +165,6 @@ const run = async () => {
               comment.body.startsWith(COMMENT_HEADER)
           )
           .map((comment) => comment.id)[0];
-
-        console.log(commentId, currentComments.data);
 
         if (commentId) {
           await octokit.issues.updateComment({
