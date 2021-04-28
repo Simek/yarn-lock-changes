@@ -111,11 +111,16 @@ const run = async () => {
       const diffsTable = createTable(lockChanges);
       const collapsed = lockChangesCount >= collapsibleThreshold;
 
-      const commentBody = `${COMMENT_HEADER}\n
-        <details${collapsed ? '' : ' open'}>
-        <summary>Click to toggle table visibility</summary>\n
-        ${diffsTable}\n
-        </details>`;
+      const commentBody =
+        COMMENT_HEADER +
+        '\n' +
+        '<details' +
+        (collapsed ? '' : ' open') +
+        '>\n' +
+        '<summary>Click to toggle table visibility</summary>\n\n' +
+        diffsTable +
+        '\n\n' +
+        '</details>';
 
       if (updateComment === 'true') {
         const currentComments = await octokit.issues.listComments({
