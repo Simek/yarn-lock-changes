@@ -5,9 +5,9 @@ branding:
   color: 'purple'
 inputs:
   collapsibleThreshold:
-    description: 'Number of lock changes, which will result in collapsed comment content.'
+    description: 'Number of lock changes, which will result in collapsed comment content an addition of summary table.'
     required: false
-    default: '20'
+    default: '25'
   path:
     description: 'Path to the `yarn.lock` file in the repository. Default value points to the file at project root.'
     required: false
