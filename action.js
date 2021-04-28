@@ -32,7 +32,7 @@ const diffLocks = (previous, current) => {
     changes[key] = {
       previous: previousPackages[key].version,
       current: '-',
-      status: getStatusLabel('removed')
+      status: 'removed'
     };
   });
 
@@ -41,7 +41,7 @@ const diffLocks = (previous, current) => {
       changes[key] = {
         previous: '-',
         current: currentPackages[key].version,
-        status: getStatusLabel('added')
+        status: 'added'
       };
     } else {
       if (changes[key].previous === currentPackages[key].version) {
@@ -49,9 +49,9 @@ const diffLocks = (previous, current) => {
       } else {
         changes[key].current = currentPackages[key].version;
         if (compareVersions(changes[key].previous, changes[key].current) === 1) {
-          changes[key].status = getStatusLabel('downgraded');
+          changes[key].status = 'downgraded';
         } else {
-          changes[key].status = getStatusLabel('updated');
+          changes[key].status = 'updated';
         }
       }
     }
@@ -65,7 +65,12 @@ const createTable = (lockChanges) =>
     [
       ['Name', 'Status', 'Previous', 'Current'],
       ...Object.entries(lockChanges)
-        .map(([key, { status, previous, current }]) => ['`' + key + '`', status, previous, current])
+        .map(([key, { status, previous, current }]) => [
+          '`' + key + '`',
+          getStatusLabel(status),
+          previous,
+          current
+        ])
         .sort((a, b) => a[0].localeCompare(b[0]))
     ],
     { align: ['l', 'c', 'c', 'c'], alignDelimiters: false }
@@ -141,7 +146,7 @@ const run = async () => {
         '<details' +
         (collapsed ? '' : ' open') +
         '>\n' +
-        '<summary>Click to toggle table visibility</summary>\n\n<br/>' +
+        '<summary>Click to toggle table visibility</summary>\n\n' +
         diffsTable +
         '\n\n' +
         '</details>';
