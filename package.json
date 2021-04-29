@@ -23,6 +23,7 @@
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^3.4.0",
     "prettier": "^2.2.1",
+    "semver": "^7.3.5",
     "svgo": "^2.3.0"
   }
 }
