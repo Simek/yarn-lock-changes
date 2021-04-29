@@ -23,15 +23,15 @@ Creates a comment inside Pull Request with the human-readable summary of the cha
 
 ### Workflow Example
 
-Example below includes all of the optional inputs for the action (set to their default values), if you happy with generated output, it's safe to remove all of them (besides required `token`).
+Example below includes all the optional inputs for the action (set to their default values), if you are happy with generated output, it's safe to remove all of them (besides required `token`).
 
 ```yml
+name: Yarn Lock Changes
 on: [pull_request]
 
 jobs:
   test_action:
     runs-on: ubuntu-latest
-    name: Yarn Lock Changes
     steps:
       - name: Checkout
         uses: actions/checkout@v2

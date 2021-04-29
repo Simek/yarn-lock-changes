@@ -1,14 +1,13 @@
+name: Yarn Lock Changes
 on: [pull_request]
 
 jobs:
   test_action:
     runs-on: ubuntu-latest
-    name: Yarn Lock Changes
     steps:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Yarn Lock Changes
         uses: ./
         with:
-          path: 'yarn.lock'
           token: ${{ secrets.GITHUB_TOKEN }}
