@@ -2,7 +2,7 @@ name: Yarn Lock Changes
 on: [pull_request]
 
 jobs:
-  test_action:
+  check:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
