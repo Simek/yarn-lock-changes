@@ -6,8 +6,8 @@
   "author": "Simek <me@simek.dev>",
   "license": "MIT",
   "scripts": {
-    "compile": "ncc build action.js -m",
-    "lint": "eslint action.js",
+    "compile": "ncc build ./src/action.js -m",
+    "lint": "eslint ./src",
     "optimize": "svgo -f ./assets"
   },
   "dependencies": {
