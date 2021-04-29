@@ -96,12 +96,26 @@ const createSummary = (lockChanges) =>
     { align: ['l', 'c'], alignDelimiters: false }
   );
 
+const getBooleanInput = (input) => {
+  const trueValues = ['true', 'yes', 'y', 'on'];
+  const falseValues = ['false', 'no', 'n', 'off'];
+  const stringInput = core.getInput(input).toLowerCase();
+
+  if (trueValues.includes(stringInput)) {
+    return true;
+  } else if (falseValues.includes(stringInput)) {
+    return false;
+  }
+
+  throw TypeError(`💥 Wrong boolean value of the input '${input}', aborting!`);
+};
+
 const run = async () => {
   try {
-    const octokit = github.getOctokit(core.getInput('token'));
+    const octokit = github.getOctokit(core.getInput('token', { required: true }));
     const inputPath = core.getInput('path');
-    const updateComment = core.getInput('updateComment');
-    const collapsibleThreshold = parseInt(core.getInput('collapsibleThreshold'));
+    const updateComment = getBooleanInput('updateComment');
+    const collapsibleThreshold = Math.max(parseInt(core.getInput('collapsibleThreshold'), 10), 0);
 
     const { owner, repo, number } = github.context.issue;
 
@@ -151,7 +165,7 @@ const run = async () => {
         '\n\n' +
         '</details>';
 
-      if (updateComment === 'true') {
+      if (updateComment) {
         const currentComments = await octokit.issues.listComments({
           owner,
           repo,
