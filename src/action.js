@@ -23,6 +23,24 @@ const getBooleanInput = (input) => {
   throw TypeError(`💥 Wrong boolean value of the input '${input}', aborting!`);
 };
 
+const getCommentId = async (octokit, oktokitParams, issueNumber) => {
+  const currentComments = await octokit.issues.listComments({
+    ...oktokitParams,
+    issue_number: issueNumber,
+    per_page: 100
+  });
+
+  if (!currentComments || !currentComments.data) {
+    throw Error('💥 Cannot fetch PR comments, aborting!');
+  }
+
+  return currentComments.data
+    .filter(
+      ({ user, body }) => user.login === 'github-actions[bot]' && body.startsWith(COMMENT_HEADER)
+    )
+    .map(({ id }) => id)[0];
+};
+
 const run = async () => {
   try {
     const octokit = getOctokit(getInput('token', { required: true }));
@@ -79,22 +97,7 @@ const run = async () => {
         '</details>';
 
       if (updateComment) {
-        const currentComments = await octokit.issues.listComments({
-          ...oktokitParams,
-          issue_number: number,
-          per_page: 100
-        });
-
-        if (!currentComments || !currentComments.data) {
-          throw Error('💥 Cannot fetch PR comments, aborting!');
-        }
-
-        const commentId = currentComments.data
-          .filter(
-            ({ user, body }) =>
-              user.login === 'github-actions[bot]' && body.startsWith(COMMENT_HEADER)
-          )
-          .map(({ id }) => id)[0];
+        const commentId = await getCommentId(octokit, oktokitParams, number);
 
         if (commentId) {
           await octokit.issues.updateComment({
@@ -115,6 +118,17 @@ const run = async () => {
           issue_number: number,
           body: commentBody
         });
+      }
+    } else {
+      if (updateComment) {
+        const commentId = await getCommentId(octokit, oktokitParams, number);
+
+        if (commentId) {
+          await octokit.issues.deleteComment({
+            ...oktokitParams,
+            comment_id: commentId
+          });
+        }
       }
     }
   } catch (error) {
