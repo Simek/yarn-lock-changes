@@ -1,5 +1,5 @@
 name: 'Yarn Lock Changes'
-description: 'Creates a comment inside Pull Request with the human-readable summary of the changes to the `yarn.lock` file.'
+description: 'Creates a comment inside Pull Request with the human-readable summary of the changes to the `yarn.lock` file. Works in public and private repositories, offers a degree of customization.'
 branding:
   icon: 'copy'
   color: 'purple'
