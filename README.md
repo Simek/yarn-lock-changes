@@ -9,11 +9,10 @@ Creates a comment inside Pull Request with the human-readable summary of the cha
   # for now, use `main` before the stable release will be published as `v1`
   uses: Simek/yarn-lock-changes@main 
   with:
-    path: 'yarn.lock'
     token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
-## Inputs
+### Inputs
 
 | Input | Required | Default | Description |
 | --- | :---: | :---: | --- |
@@ -21,6 +20,29 @@ Creates a comment inside Pull Request with the human-readable summary of the cha
 | `path` | No | `'yarn.lock'` | Path to the `yarn.lock` file in the repository. Default value points to the file at project root. |
 | `token` | **Yes** | - | GitHub token for the bot, so it can publish a comment in the pull request. |
 | `updateComment` | No | `'true'` | Should the bot update the summary comment. If value is `'false'`, bot will post a new comment on each new commit. |
+
+### Workflow Example
+
+Example below includes all of the optional inputs for the action (set to their default values), if you happy with generated output, it's safe to remove all of them (besides required `token`).
+
+```yml
+on: [pull_request]
+
+jobs:
+  test_action:
+    runs-on: ubuntu-latest
+    name: Yarn Lock Changes
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Yarn Lock Changes
+        uses: Simek/yarn-lock-changes@main
+        with:
+          collapsibleThreshold: '25'
+          path: 'yarn.lock'
+          token: ${{ secrets.GITHUB_TOKEN }}
+          updateComment: 'true'
+```
 
 ## Preview
 
