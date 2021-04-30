@@ -78,10 +78,14 @@ const run = async () => {
     const lockChangesCount = Object.keys(lockChanges).length;
 
     if (lockChangesCount) {
-      const diffsTable = createTable(lockChanges);
+      let diffsTable = createTable(lockChanges);
       const collapsed = lockChangesCount >= collapsibleThreshold;
 
       const changesSummary = collapsed ? '### Summary\n' + createSummary(lockChanges) : '';
+
+      if (diffsTable.length >= 64000) {
+        diffsTable = createTable(lockChanges, true);
+      }
 
       const commentBody =
         COMMENT_HEADER +
@@ -95,10 +99,6 @@ const run = async () => {
         diffsTable +
         '\n\n' +
         '</details>';
-
-      if (commentBody >= 65536) {
-        throw Error('💥 Changes comment content is too long to post on GitHub, aborting!');
-      }
 
       if (updateComment) {
         const commentId = await getCommentId(octokit, oktokitParams, number);
