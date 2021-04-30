@@ -75,7 +75,6 @@ const run = async () => {
     }
 
     const baseLockSHA = baseTree.data.tree.filter((file) => file.path === 'yarn.lock')[0].sha;
-
     const masterLockData = await octokit.request('GET /repos/{owner}/{repo}/git/blobs/{file_sha}', {
       ...oktokitParams,
       path: inputPath,
