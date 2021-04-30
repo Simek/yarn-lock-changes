@@ -51,6 +51,12 @@ const run = async () => {
     const { owner, repo, number } = context.issue;
     const oktokitParams = { owner, repo };
 
+    console.warn(context.payload)
+    console.warn(await octokit.request('GET /repos/{owner}/{repo}/branches/{branch}', {
+      ...oktokitParams,
+      branch: context.payload.default_branch
+    }))
+
     if (!number) {
       throw Error('💥 Cannot find the PR, aborting!');
     }
