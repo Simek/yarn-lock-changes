@@ -51,10 +51,10 @@ const run = async () => {
     const { owner, repo, number } = context.issue;
     const oktokitParams = { owner, repo };
 
-    console.warn(await octokit.request('GET /repos/<owner>/<repo>/git/trees/url_encode(<branch>:<path>)', {
+    console.warn(await octokit.request('GET /repos/<owner>/<repo>/git/trees/url_encode(<branch_name>:<parent_path>)', {
       ...oktokitParams,
-      branch: context.payload.repository.default_branch,
-      path: inputPath
+      branch_name: context.payload.repository.default_branch,
+      parent_path: inputPath
     }))
 
     if (!number) {
