@@ -56,6 +56,7 @@ const run = async () => {
       branch: context.payload.repository.default_branch,
       path: inputPath.lastIndexOf('/') ? inputPath.substring(0, inputPath.lastIndexOf('/')) : ''
     }))
+    console.warn(context.payload.repository.default_branch, inputPath.lastIndexOf('/') ? inputPath.substring(0, inputPath.lastIndexOf('/')) : '')
 
     if (!number) {
       throw Error('💥 Cannot find the PR, aborting!');
