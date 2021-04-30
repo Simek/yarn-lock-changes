@@ -52,17 +52,23 @@ const run = async () => {
     const oktokitParams = { owner, repo };
 
     console.log(context.payload.pull_request.base.sha)
-    console.log(context.payload.repository.default_branch, inputPath.lastIndexOf('/') ? inputPath.substring(0, inputPath.lastIndexOf('/')) : '')
-    console.log(await octokit.request('GET /repos/{owner}/{repo}/git/trees/{branch}:{path}', {
+    // console.log(context.payload.repository.default_branch, inputPath.lastIndexOf('/') ? inputPath.substring(0, inputPath.lastIndexOf('/')) : '')
+
+    const baseTree = await octokit.request('GET /repos/{owner}/{repo}/git/trees/{branch}:{path}', {
       ...oktokitParams,
       branch: context.payload.repository.default_branch,
       path: inputPath.lastIndexOf('/') ? inputPath.substring(0, inputPath.lastIndexOf('/')) : ''
-    }))
-    console.log(await octokit.request('GET /repos/{owner}/{repo}/git/trees/{context.payload.pull_request.base.sha}', {
-      ...oktokitParams,
-      branch: context.payload.repository.default_branch,
-      path: inputPath.lastIndexOf('/') ? inputPath.substring(0, inputPath.lastIndexOf('/')) : ''
-    }))
+    });
+
+    const baseLockSHA = baseTree.tree.filter(file => file.path === 'yarn.lock')[0].sha;
+
+    console.log(baseLockSHA);
+
+    // console.log(await octokit.request('GET /repos/{owner}/{repo}/git/trees/{context.payload.pull_request.base.sha}', {
+    //   ...oktokitParams,
+    //   branch: context.payload.repository.default_branch,
+    //   path: inputPath.lastIndexOf('/') ? inputPath.substring(0, inputPath.lastIndexOf('/')) : ''
+    // }))
 
     if (!number) {
       throw Error('💥 Cannot find the PR, aborting!');
@@ -77,9 +83,10 @@ const run = async () => {
     const content = await fs.readFileSync(lockPath, { encoding: 'utf8' });
     const updatedLock = lockfile.parse(content);
 
-    const masterLockResponse = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
+    const masterLockResponse = await octokit.request('GET /repos/{owner}/{repo}/git/blobs/{file_sha}', {
       ...oktokitParams,
-      path: inputPath
+      path: inputPath,
+      file_sha: baseLockSHA
     });
 
     if (!masterLockResponse || !masterLockResponse.data || !masterLockResponse.data.content) {
@@ -150,7 +157,7 @@ const run = async () => {
     }
   } catch (error) {
     console.log(error)
-    // setFailed(error.message);
+    setFailed(error.message);
   }
 };
 
