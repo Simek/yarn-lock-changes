@@ -13,7 +13,8 @@ export const createTable = (lockChanges) =>
       ...Object.entries(lockChanges)
         .map(([key, { status, previous, current }]) => [
           '`' + key + '`',
-          getStatusLabel(status),
+          '',
+          //getStatusLabel(status),
           previous,
           current
         ])

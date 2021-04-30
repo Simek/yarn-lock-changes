@@ -96,6 +96,10 @@ const run = async () => {
         '\n\n' +
         '</details>';
 
+      if (commentBody >= 65536) {
+        throw Error('💥 Changes comment content is too long to post on GitHub, aborting!');
+      }
+
       if (updateComment) {
         const commentId = await getCommentId(octokit, oktokitParams, number);
 
