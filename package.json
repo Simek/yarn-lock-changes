@@ -28,7 +28,8 @@
     "uglify-js": "^3.13.5",
     "codemirror": "^5.61.0",
     "raptor-app": "^5.0.5",
-    "gatsby": "^3.4.0"
+    "gatsby": "^3.4.0",
+    "mulp": "^3.0.0"
   },
   "devDependencies": {
     "eslint": "^7.25.0",
