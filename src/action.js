@@ -51,8 +51,8 @@ const run = async () => {
     const { owner, repo, number } = context.issue;
     const oktokitParams = { owner, repo };
 
-    console.warn(context.payload.repository.default_branch, inputPath.lastIndexOf('/') ? inputPath.substring(0, inputPath.lastIndexOf('/')) : '')
-    console.warn(await octokit.request('GET /repos/<owner>/<repo>/git/trees/<branch>:<path>', {
+    console.log(context.payload.repository.default_branch, inputPath.lastIndexOf('/') ? inputPath.substring(0, inputPath.lastIndexOf('/')) : '')
+    console.log(await octokit.request('GET /repos/<owner>/<repo>/git/trees/<branch>:<path>', {
       ...oktokitParams,
       branch: context.payload.repository.default_branch,
       path: inputPath.lastIndexOf('/') ? inputPath.substring(0, inputPath.lastIndexOf('/')) : ''
@@ -143,7 +143,8 @@ const run = async () => {
       }
     }
   } catch (error) {
-    setFailed(error.message);
+    console.log(error)
+    // setFailed(error.message);
   }
 };
 
