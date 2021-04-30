@@ -148,7 +148,6 @@ const run = async () => {
       }
     }
   } catch (error) {
-    console.log(error);
     setFailed(error.message);
   }
 };
