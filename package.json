@@ -16,20 +16,7 @@
     "@yarnpkg/lockfile": "^1.1.0",
     "compare-versions": "^3.6.0",
     "js-base64": "^3.6.0",
-    "markdown-table": "^3.0.0",
-    "react-native-template-vife": "^1.2.0",
-    "react-misc-toolbox": "^1.1.58",
-    "react-native-version-manager": "^1.1.0",
-    "pb-schema": "^3.3.8",
-    "terrible-lodash": "^0.0.3",
-    "@astro-my/sign-request": "^0.1.1",
-    "lazy-bee-ui": "^1.0.0",
-    "graphql": "^15.5.0",
-    "uglify-js": "^3.13.5",
-    "codemirror": "^5.61.0",
-    "raptor-app": "^5.0.5",
-    "gatsby": "^3.4.0",
-    "mulp": "^3.0.0"
+    "markdown-table": "^3.0.0"
   },
   "devDependencies": {
     "eslint": "^7.25.0",

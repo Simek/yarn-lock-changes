@@ -51,30 +51,6 @@ const run = async () => {
     const { owner, repo, number } = context.issue;
     const oktokitParams = { owner, repo };
 
-    console.log(context.payload.pull_request.base.sha)
-    // console.log(context.payload.repository.default_branch, inputPath.lastIndexOf('/') ? inputPath.substring(0, inputPath.lastIndexOf('/')) : '')
-
-    const baseTree = await octokit.request('GET /repos/{owner}/{repo}/git/trees/{branch}:{path}', {
-      ...oktokitParams,
-      branch: context.payload.repository.default_branch,
-      path: inputPath.lastIndexOf('/') ? inputPath.substring(0, inputPath.lastIndexOf('/')) : ''
-    });
-
-
-    if (!baseTree || !baseTree.data || !baseTree.data.tree) {
-      throw Error('💥 Cannot fetch base branch tree, aborting!');
-    }
-
-    const baseLockSHA = baseTree.data.tree.filter(file => file.path === 'yarn.lock')[0].sha;
-
-    console.log(baseLockSHA);
-
-    // console.log(await octokit.request('GET /repos/{owner}/{repo}/git/trees/{context.payload.pull_request.base.sha}', {
-    //   ...oktokitParams,
-    //   branch: context.payload.repository.default_branch,
-    //   path: inputPath.lastIndexOf('/') ? inputPath.substring(0, inputPath.lastIndexOf('/')) : ''
-    // }))
-
     if (!number) {
       throw Error('💥 Cannot find the PR, aborting!');
     }
@@ -87,6 +63,18 @@ const run = async () => {
 
     const content = await fs.readFileSync(lockPath, { encoding: 'utf8' });
     const updatedLock = lockfile.parse(content);
+
+    const baseTree = await octokit.request('GET /repos/{owner}/{repo}/git/trees/{branch}:{path}', {
+      ...oktokitParams,
+      branch: context.payload.repository.default_branch,
+      path: inputPath.lastIndexOf('/') ? inputPath.substring(0, inputPath.lastIndexOf('/')) : ''
+    });
+
+    if (!baseTree || !baseTree.data || !baseTree.data.tree) {
+      throw Error('💥 Cannot fetch base branch tree, aborting!');
+    }
+
+    const baseLockSHA = baseTree.data.tree.filter((file) => file.path === 'yarn.lock')[0].sha;
 
     const masterLockData = await octokit.request('GET /repos/{owner}/{repo}/git/blobs/{file_sha}', {
       ...oktokitParams,
@@ -161,7 +149,7 @@ const run = async () => {
       }
     }
   } catch (error) {
-    console.log(error)
+    console.log(error);
     setFailed(error.message);
   }
 };
