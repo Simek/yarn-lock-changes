@@ -6,14 +6,14 @@ const ASSETS_URL = 'https://raw.githubusercontent.com/Simek/yarn-lock-changes/ma
 const getStatusLabel = (status) =>
   `[<sub><img alt="${status.toUpperCase()}" src="${ASSETS_URL}/${status}.svg" height="16" /></sub>](#)`;
 
-export const createTable = (lockChanges) =>
+export const createTable = (lockChanges, plainStatuses = false) =>
   markdownTable(
     [
       ['Name', 'Status', 'Previous', 'Current'],
       ...Object.entries(lockChanges)
         .map(([key, { status, previous, current }]) => [
           '`' + key + '`',
-          getStatusLabel(status),
+          plainStatuses ? status.toUpperCase() : getStatusLabel(status),
           previous,
           current
         ])

@@ -78,9 +78,13 @@ const run = async () => {
     const lockChangesCount = Object.keys(lockChanges).length;
 
     if (lockChangesCount) {
-      const diffsTable = createTable(lockChanges);
-      const collapsed = lockChangesCount >= collapsibleThreshold;
+      let diffsTable = createTable(lockChanges);
 
+      if (diffsTable.length >= 64000) {
+        diffsTable = createTable(lockChanges, true);
+      }
+
+      const collapsed = lockChangesCount >= collapsibleThreshold;
       const changesSummary = collapsed ? '### Summary\n' + createSummary(lockChanges) : '';
 
       const commentBody =
