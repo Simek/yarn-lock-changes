@@ -64,16 +64,28 @@ const run = async () => {
     const content = await fs.readFileSync(lockPath, { encoding: 'utf8' });
     const updatedLock = lockfile.parse(content);
 
-    const masterLockResponse = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
+    const baseTree = await octokit.request('GET /repos/{owner}/{repo}/git/trees/{branch}:{path}', {
       ...oktokitParams,
-      path: inputPath
+      branch: context.payload.repository.default_branch,
+      path: inputPath.lastIndexOf('/') ? inputPath.substring(0, inputPath.lastIndexOf('/')) : ''
     });
 
-    if (!masterLockResponse || !masterLockResponse.data || !masterLockResponse.data.content) {
+    if (!baseTree || !baseTree.data || !baseTree.data.tree) {
+      throw Error('💥 Cannot fetch base branch tree, aborting!');
+    }
+
+    const baseLockSHA = baseTree.data.tree.filter((file) => file.path === 'yarn.lock')[0].sha;
+    const masterLockData = await octokit.request('GET /repos/{owner}/{repo}/git/blobs/{file_sha}', {
+      ...oktokitParams,
+      path: inputPath,
+      file_sha: baseLockSHA
+    });
+
+    if (!masterLockData || !masterLockData.data || !masterLockData.data.content) {
       throw Error('💥 Cannot fetch base lock, aborting!');
     }
 
-    const masterLock = lockfile.parse(Base64.decode(masterLockResponse.data.content));
+    const masterLock = lockfile.parse(Base64.decode(masterLockData.data.content));
     const lockChanges = diffLocks(masterLock, updatedLock);
     const lockChangesCount = Object.keys(lockChanges).length;
 
