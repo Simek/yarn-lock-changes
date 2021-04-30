@@ -51,11 +51,12 @@ const run = async () => {
     const { owner, repo, number } = context.issue;
     const oktokitParams = { owner, repo };
 
+    console.log(context.payload)
     console.log(context.payload.repository.default_branch, inputPath.lastIndexOf('/') ? inputPath.substring(0, inputPath.lastIndexOf('/')) : '')
-    console.log(await octokit.request('GET /repos/<owner>/<repo>/git/trees/<branch>:<path>', {
+    console.log(await octokit.request('GET /repos/<owner>/<repo>/git/trees/<branch>', {
       ...oktokitParams,
       branch: context.payload.repository.default_branch,
-      path: inputPath.lastIndexOf('/') ? inputPath.substring(0, inputPath.lastIndexOf('/')) : ''
+      // path: inputPath.lastIndexOf('/') ? inputPath.substring(0, inputPath.lastIndexOf('/')) : ''
     }))
 
     if (!number) {
