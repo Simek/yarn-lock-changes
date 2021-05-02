@@ -5,8 +5,11 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
       - name: Yarn Lock Changes
-        uses: Simek/yarn-lock-changes@main
+        uses: ./
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          workflowId: 'YLC Main Default'
+          useCheckout: 'true'
+          workflowId: 'YLC Local'

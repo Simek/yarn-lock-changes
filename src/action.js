@@ -23,7 +23,7 @@ const getBooleanInput = (input) => {
   throw TypeError(`💥 Wrong boolean value of the input '${input}', aborting!`);
 };
 
-const getCommentId = async (octokit, oktokitParams, issueNumber) => {
+const getCommentId = async (octokit, oktokitParams, issueNumber, workflowId = undefined) => {
   const currentComments = await octokit.issues.listComments({
     ...oktokitParams,
     issue_number: issueNumber,
@@ -36,7 +36,10 @@ const getCommentId = async (octokit, oktokitParams, issueNumber) => {
 
   return currentComments.data
     .filter(
-      ({ user, body }) => user.login === 'github-actions[bot]' && body.startsWith(COMMENT_HEADER)
+      ({ user, body }) =>
+        user.login === 'github-actions[bot]' &&
+        body.startsWith(COMMENT_HEADER) &&
+        (workflowId ? body.includes(workflowId) : true)
     )
     .map(({ id }) => id)[0];
 };
@@ -89,6 +92,7 @@ const run = async () => {
     const failOnDowngrade = getBooleanInput('failOnDowngrade');
     const useCheckout = getBooleanInput('useCheckout');
     const collapsibleThreshold = Math.max(parseInt(getInput('collapsibleThreshold'), 10), 0);
+    const workflowId = getInput('workflowId');
 
     const { owner, repo, number } = context.issue;
     const { base, head } = context.payload.pull_request;
@@ -130,7 +134,9 @@ const run = async () => {
         '>\n' +
         '<summary>Click to toggle table visibility</summary>\n<br/>\n\n' +
         diffsTable +
-        '\n\n' +
+        '\n' +
+        (workflowId ? '<sub>Workflow ID:' + workflowId + '</sub>' : '') +
+        '\n' +
         '</details>';
 
       if (updateComment) {
