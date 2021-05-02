@@ -5,7 +5,7 @@ const fs = require('fs');
 const { Base64 } = require('js-base64');
 const path = require('path');
 
-const { createTable, createSummary, diffLocks } = require('./utils');
+const { STATUS, countStatuses, createTable, createSummary, diffLocks } = require('./utils');
 
 const COMMENT_HEADER = '## `yarn.lock` changes';
 
@@ -41,14 +41,19 @@ const getCommentId = async (octokit, oktokitParams, issueNumber) => {
     .map(({ id }) => id)[0];
 };
 
+const getBasePathFromInput = (input) =>
+  input.lastIndexOf('/') ? input.substring(0, input.lastIndexOf('/')) : '';
+
 const run = async () => {
   try {
     const octokit = getOctokit(getInput('token', { required: true }));
     const inputPath = getInput('path');
     const updateComment = getBooleanInput('updateComment');
+    const failOnDowngrade = getBooleanInput('failOnDowngrade');
     const collapsibleThreshold = Math.max(parseInt(getInput('collapsibleThreshold'), 10), 0);
 
     const { owner, repo, number } = context.issue;
+    const { default_branch } = context.payload.repository;
     const oktokitParams = { owner, repo };
 
     if (!number) {
@@ -66,8 +71,8 @@ const run = async () => {
 
     const baseTree = await octokit.request('GET /repos/{owner}/{repo}/git/trees/{branch}:{path}', {
       ...oktokitParams,
-      branch: context.payload.repository.default_branch,
-      path: inputPath.lastIndexOf('/') ? inputPath.substring(0, inputPath.lastIndexOf('/')) : ''
+      branch: default_branch,
+      path: getBasePathFromInput(inputPath)
     });
 
     if (!baseTree || !baseTree.data || !baseTree.data.tree) {
@@ -77,7 +82,6 @@ const run = async () => {
     const baseLockSHA = baseTree.data.tree.filter((file) => file.path === 'yarn.lock')[0].sha;
     const masterLockData = await octokit.request('GET /repos/{owner}/{repo}/git/blobs/{file_sha}', {
       ...oktokitParams,
-      path: inputPath,
       file_sha: baseLockSHA
     });
 
@@ -89,6 +93,10 @@ const run = async () => {
     const lockChanges = diffLocks(masterLock, updatedLock);
     const lockChangesCount = Object.keys(lockChanges).length;
 
+    const commentId = updateComment
+      ? await getCommentId(octokit, oktokitParams, number)
+      : undefined;
+
     if (lockChangesCount) {
       let diffsTable = createTable(lockChanges);
 
@@ -99,7 +107,7 @@ const run = async () => {
       const collapsed = lockChangesCount >= collapsibleThreshold;
       const changesSummary = collapsed ? '### Summary\n' + createSummary(lockChanges) : '';
 
-      const commentBody =
+      const body =
         COMMENT_HEADER +
         '\n' +
         changesSummary +
@@ -113,39 +121,37 @@ const run = async () => {
         '</details>';
 
       if (updateComment) {
-        const commentId = await getCommentId(octokit, oktokitParams, number);
-
         if (commentId) {
           await octokit.issues.updateComment({
             ...oktokitParams,
             comment_id: commentId,
-            body: commentBody
+            body
           });
         } else {
           await octokit.issues.createComment({
             ...oktokitParams,
             issue_number: number,
-            body: commentBody
+            body
           });
         }
       } else {
         await octokit.issues.createComment({
           ...oktokitParams,
           issue_number: number,
-          body: commentBody
+          body
         });
       }
     } else {
-      if (updateComment) {
-        const commentId = await getCommentId(octokit, oktokitParams, number);
-
-        if (commentId) {
-          await octokit.issues.deleteComment({
-            ...oktokitParams,
-            comment_id: commentId
-          });
-        }
+      if (updateComment && commentId) {
+        await octokit.issues.deleteComment({
+          ...oktokitParams,
+          comment_id: commentId
+        });
       }
+    }
+
+    if (failOnDowngrade && countStatuses(STATUS.DOWNGRADED)) {
+      throw Error('🚨 Downgrade detected, failing the action!');
     }
   } catch (error) {
     setFailed(error.message);
