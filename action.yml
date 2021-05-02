@@ -27,6 +27,9 @@ inputs:
     description: 'Use local checkout as a source of updated `yarn.lock` file. If value is set to `false`, content will be fetched from RAW API.'
     required: false
     default: 'false'
+  workflowId:
+    description: 'Set the workflow id while running multiple lock checks on the same PR.'
+    required: false
 runs:
   using: 'node12'
   main: 'dist/index.js'

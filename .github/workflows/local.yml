@@ -1,4 +1,4 @@
-name: Yarn Lock Changes
+name: YLC Local
 on: [pull_request]
 
 jobs:
