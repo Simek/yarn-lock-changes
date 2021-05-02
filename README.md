@@ -21,8 +21,11 @@ Creates a comment inside Pull Request with the human-readable summary of the cha
 | `path` | No | `'yarn.lock'` | Path to the `yarn.lock` file in the repository. Default value points to the file at project root. |
 | `token` | **Yes** | - | GitHub token for the bot, so it can publish a comment in the pull request. |
 | `updateComment` | No | `'true'` | Update the comment on each new commit. If value is set to `'false'`, bot will post a new one on each change. |
+| `useCheckout` | No | `'false'` | Use local checkout as a source of updated `yarn.lock` file. If value is set to `'false'`, content will be fetched from RAW API. |
 
 ### Workflow Example
+
+#### Basic Workflow
 
 Example below includes all the optional inputs for the action (set to their default values), if you are happy with generated output, it's safe to remove all of them (besides required `token`).
 
@@ -34,16 +37,40 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
       - name: Yarn Lock Changes
         uses: Simek/yarn-lock-changes@main
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           collapsibleThreshold: '25'
           failOnDowngrade: 'false'
           path: 'yarn.lock'
-          token: ${{ secrets.GITHUB_TOKEN }}
           updateComment: 'true'
+          useCheckout: 'false'
+```
+
+If this version of workflow fails for you in private repository or when you want to modify the `yarn.lock` file from PR before the check, please use the example workflow below.
+
+#### Workflow with `useCheckout`
+
+```yml
+name: Custom Action
+on: [pull_request]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        # ---
+        # your custom actions or manipulations to the lock file
+        # ---
+      - name: Yarn Lock Changes
+        uses: Simek/yarn-lock-changes@main
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          # use the lock file from local workflow checkout
+          useCheckout: 'true'
 ```
 
 ## Preview

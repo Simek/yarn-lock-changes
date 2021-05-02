@@ -44,52 +44,65 @@ const getCommentId = async (octokit, oktokitParams, issueNumber) => {
 const getBasePathFromInput = (input) =>
   input.lastIndexOf('/') ? input.substring(0, input.lastIndexOf('/')) : '';
 
+const getLockBlobContent = async (octokit, { user, repo, sha, label }) => {
+  const branchTree = await octokit.request('GET /repos/{owner}/{repo}/git/trees/{branch}:{path}', {
+    owner: user,
+    repo,
+    branch: sha,
+    path: getBasePathFromInput(getInput('path'))
+  });
+
+  if (!branchTree || !branchTree.data || !branchTree.data.tree) {
+    throw Error(`💥 Cannot fetch '${label}' tree, aborting!`);
+  }
+
+  const lockSHA = branchTree.data.tree.filter((file) => file.path === 'yarn.lock')[0].sha;
+  const lockData = await octokit.request('GET /repos/{owner}/{repo}/git/blobs/{file_sha}', {
+    owner: user,
+    repo,
+    branch: sha,
+    file_sha: lockSHA
+  });
+
+  if (!lockData || !lockData.data || !lockData.data.content) {
+    throw Error(`💥 Cannot fetch lock from '${label}' branch, aborting!`);
+  }
+
+  return lockfile.parse(Base64.decode(lockData.data.content));
+};
+
+const getLockLocalContent = async (inputPath) => {
+  const lockPath = path.resolve(process.cwd(), inputPath);
+
+  if (!fs.existsSync(lockPath)) {
+    throw Error('💥 It looks like lock file does not exist in this PR, aborting!');
+  }
+
+  return lockfile.parse(await fs.readFileSync(lockPath, { encoding: 'utf8' }));
+};
+
 const run = async () => {
   try {
     const octokit = getOctokit(getInput('token', { required: true }));
     const inputPath = getInput('path');
     const updateComment = getBooleanInput('updateComment');
     const failOnDowngrade = getBooleanInput('failOnDowngrade');
+    const useCheckout = getBooleanInput('useCheckout');
     const collapsibleThreshold = Math.max(parseInt(getInput('collapsibleThreshold'), 10), 0);
 
     const { owner, repo, number } = context.issue;
-    const { default_branch } = context.payload.repository;
+    const { base, head } = context.payload.pull_request;
     const oktokitParams = { owner, repo };
 
     if (!number) {
       throw Error('💥 Cannot find the PR, aborting!');
     }
 
-    const lockPath = path.resolve(process.cwd(), inputPath);
+    const updatedLock = useCheckout
+      ? await getLockLocalContent(inputPath)
+      : await getLockBlobContent(octokit, head);
 
-    if (!fs.existsSync(lockPath)) {
-      throw Error('💥 It looks like lock does not exist in this PR, aborting!');
-    }
-
-    const content = await fs.readFileSync(lockPath, { encoding: 'utf8' });
-    const updatedLock = lockfile.parse(content);
-
-    const baseTree = await octokit.request('GET /repos/{owner}/{repo}/git/trees/{branch}:{path}', {
-      ...oktokitParams,
-      branch: default_branch,
-      path: getBasePathFromInput(inputPath)
-    });
-
-    if (!baseTree || !baseTree.data || !baseTree.data.tree) {
-      throw Error('💥 Cannot fetch base branch tree, aborting!');
-    }
-
-    const baseLockSHA = baseTree.data.tree.filter((file) => file.path === 'yarn.lock')[0].sha;
-    const masterLockData = await octokit.request('GET /repos/{owner}/{repo}/git/blobs/{file_sha}', {
-      ...oktokitParams,
-      file_sha: baseLockSHA
-    });
-
-    if (!masterLockData || !masterLockData.data || !masterLockData.data.content) {
-      throw Error('💥 Cannot fetch base lock, aborting!');
-    }
-
-    const masterLock = lockfile.parse(Base64.decode(masterLockData.data.content));
+    const masterLock = getLockBlobContent(octokit, base);
     const lockChanges = diffLocks(masterLock, updatedLock);
     const lockChangesCount = Object.keys(lockChanges).length;
 

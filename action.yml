@@ -23,6 +23,10 @@ inputs:
     description: 'Update the comment on each new commit. If value is set to `false`, bot will post a new one on each change.'
     required: false
     default: 'true'
+  useCheckout:
+    description: 'Use local checkout as a source of updated `yarn.lock` file. If value is set to `false`, content will be fetched from RAW API.'
+    required: false
+    default: 'false'
 runs:
   using: 'node12'
   main: 'dist/index.js'
