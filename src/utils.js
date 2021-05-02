@@ -1,10 +1,22 @@
 const compareVersions = require('compare-versions');
 const { markdownTable } = require('markdown-table');
 
-const ASSETS_URL = 'https://raw.githubusercontent.com/Simek/yarn-lock-changes/main/assets';
+const ASSETS_URL = {
+  ADDED: 'https://git.io/J38HP',
+  DOWNGRADED: 'https://git.io/J38ds',
+  REMOVED: 'https://git.io/J38dt',
+  UPDATED: 'https://git.io/J38dY'
+};
+
+export const STATUS = {
+  ADDED: 'ADDED',
+  DOWNGRADED: 'DOWNGRADED',
+  REMOVED: 'REMOVED',
+  UPDATED: 'UPDATED'
+};
 
 const getStatusLabel = (status) =>
-  `[<sub><img alt="${status.toUpperCase()}" src="${ASSETS_URL}/${status}.svg" height="16" /></sub>](#)`;
+  `[<sub><img alt="${status}" src="${ASSETS_URL[status]}" height="16" /></sub>](#)`;
 
 export const createTable = (lockChanges, plainStatuses = false) =>
   markdownTable(
@@ -13,7 +25,7 @@ export const createTable = (lockChanges, plainStatuses = false) =>
       ...Object.entries(lockChanges)
         .map(([key, { status, previous, current }]) => [
           '`' + key + '`',
-          plainStatuses ? status.toUpperCase() : getStatusLabel(status),
+          plainStatuses ? status : getStatusLabel(status),
           previous,
           current
         ])
@@ -22,7 +34,7 @@ export const createTable = (lockChanges, plainStatuses = false) =>
     { align: ['l', 'c', 'c', 'c'], alignDelimiters: false }
   );
 
-const countStatuses = (lockChanges, statusToCount) =>
+export const countStatuses = (lockChanges, statusToCount) =>
   Object.values(lockChanges).filter(({ status }) => status === statusToCount).length;
 
 const createSummaryRow = (lockChanges, status) => {
@@ -34,10 +46,10 @@ export const createSummary = (lockChanges) =>
   markdownTable(
     [
       ['Status', 'Count'],
-      createSummaryRow(lockChanges, 'added'),
-      createSummaryRow(lockChanges, 'updated'),
-      createSummaryRow(lockChanges, 'downgraded'),
-      createSummaryRow(lockChanges, 'removed')
+      createSummaryRow(lockChanges, STATUS.ADDED),
+      createSummaryRow(lockChanges, STATUS.UPDATED),
+      createSummaryRow(lockChanges, STATUS.DOWNGRADED),
+      createSummaryRow(lockChanges, STATUS.REMOVED)
     ].filter(Boolean),
     { align: ['l', 'c'], alignDelimiters: false }
   );
@@ -60,7 +72,7 @@ export const diffLocks = (previous, current) => {
     changes[key] = {
       previous: previousPackages[key].version,
       current: '-',
-      status: 'removed'
+      status: STATUS.REMOVED
     };
   });
 
@@ -69,7 +81,7 @@ export const diffLocks = (previous, current) => {
       changes[key] = {
         previous: '-',
         current: currentPackages[key].version,
-        status: 'added'
+        status: STATUS.ADDED
       };
     } else {
       if (changes[key].previous === currentPackages[key].version) {
@@ -77,9 +89,9 @@ export const diffLocks = (previous, current) => {
       } else {
         changes[key].current = currentPackages[key].version;
         if (compareVersions(changes[key].previous, changes[key].current) === 1) {
-          changes[key].status = 'downgraded';
+          changes[key].status = STATUS.DOWNGRADED;
         } else {
-          changes[key].status = 'updated';
+          changes[key].status = STATUS.UPDATED;
         }
       }
     }
