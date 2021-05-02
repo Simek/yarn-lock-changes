@@ -19,7 +19,7 @@ Creates a comment inside Pull Request with the human-readable summary of the cha
 | Input | Required | Default | Description |
 | --- | :---: | :---: | --- |
 | `collapsibleThreshold` | No | `'25'` | Number of lock changes, which will result in collapsed comment content an addition of summary table. |
-| `failOnDowngrade` | No | `'false'` | When a dependency downgrade is detected, fail the action. |
+| `failOnDowngrade` | No | `'false'` | When a dependency downgrade is detected, fail the action. Comment will still be posted. |
 | `path` | No | `'yarn.lock'` | Path to the `yarn.lock` file in the repository. Default value points to the file at project root. |
 | `token` | <ins>**Yes**</ins> | – | GitHub token for the bot, so it can publish a comment in the pull request. |
 | `updateComment` | No | `'true'` | Update the comment on each new commit. If value is set to `'false'`, bot will post a new one on each change. |
