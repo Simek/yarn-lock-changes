@@ -11,7 +11,7 @@
     "optimize": "svgo -f ./assets"
   },
   "dependencies": {
-    "@actions/core": "1.2.2",
+    "@actions/core": "^1.2.7",
     "@actions/github": "^4.0.0",
     "@yarnpkg/lockfile": "^1.1.0",
     "compare-versions": "^3.6.0",
