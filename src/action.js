@@ -92,7 +92,7 @@ const run = async () => {
 
       const collapsed = lockChangesCount >= collapsibleThreshold;
       const changesSummary = collapsed ? '### Summary\n' + createSummary(lockChanges) : '';
-      const lockPathNote = true ? '> Lock path: `' + inputPath + '`\n' : '';
+      const lockPathNote = inputPath !== 'yarn.lock' ? '> Lock path: `' + inputPath + '`\n' : '';
 
       const body =
         COMMENT_HEADER +
