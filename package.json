@@ -11,18 +11,18 @@
     "optimize": "svgo -f ./assets"
   },
   "dependencies": {
-    "@actions/core": "^1.2.7",
-    "@actions/github": "^4.0.0",
+    "@actions/core": "^1.4.0",
+    "@actions/github": "^5.0.0",
     "@yarnpkg/lockfile": "^1.1.0",
     "compare-versions": "^3.6.0",
-    "js-base64": "^3.6.0",
-    "markdown-table": "^3.0.0"
+    "js-base64": "^3.6.1",
+    "markdown-table": "^3.0.1"
   },
   "devDependencies": {
-    "eslint": "^7.25.0",
+    "eslint": "^7.30.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^3.4.0",
-    "prettier": "^2.2.1",
-    "svgo": "^2.3.0"
+    "prettier": "^2.3.2",
+    "svgo": "^2.3.1"
   }
 }

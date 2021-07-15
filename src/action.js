@@ -1,4 +1,4 @@
-const { getInput, setFailed } = require('@actions/core');
+const { getBooleanInput, getInput, setFailed } = require('@actions/core');
 const { context, getOctokit } = require('@actions/github');
 const lockfile = require('@yarnpkg/lockfile');
 const fs = require('fs');
@@ -8,20 +8,6 @@ const path = require('path');
 const { STATUS, countStatuses, createTable, createSummary, diffLocks } = require('./utils');
 
 const COMMENT_HEADER = '## `yarn.lock` changes';
-
-const getBooleanInput = (input) => {
-  const trueValues = ['true', 'yes', 'y', 'on'];
-  const falseValues = ['false', 'no', 'n', 'off'];
-  const inputValue = getInput(input).toLowerCase();
-
-  if (trueValues.includes(inputValue)) {
-    return true;
-  } else if (falseValues.includes(inputValue)) {
-    return false;
-  }
-
-  throw TypeError(`💥 Wrong boolean value of the input '${input}', aborting!`);
-};
 
 const getCommentId = async (octokit, oktokitParams, issueNumber) => {
   const currentComments = await octokit.issues.listComments({
@@ -66,7 +52,7 @@ const run = async () => {
       throw Error('💥 It looks like lock does not exist in this PR, aborting!');
     }
 
-    const content = await fs.readFileSync(lockPath, { encoding: 'utf8' });
+    const content = fs.readFileSync(lockPath, { encoding: 'utf8' });
     const updatedLock = lockfile.parse(content);
 
     const baseTree = await octokit.request('GET /repos/{owner}/{repo}/git/trees/{branch}:{path}', {
@@ -106,9 +92,12 @@ const run = async () => {
 
       const collapsed = lockChangesCount >= collapsibleThreshold;
       const changesSummary = collapsed ? '### Summary\n' + createSummary(lockChanges) : '';
+      const lockPathNote = inputPath !== 'yarn.lock' ? '> Lock path: `' + inputPath + '`\n' : '';
 
       const body =
         COMMENT_HEADER +
+        '\n' +
+        lockPathNote +
         '\n' +
         changesSummary +
         '\n' +
