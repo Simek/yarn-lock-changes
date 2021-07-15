@@ -111,20 +111,20 @@ const run = async () => {
 
       if (updateComment) {
         if (commentId) {
-          await octokit.issues.updateComment({
+          await octokit.rest.issues.updateComment({
             ...oktokitParams,
             comment_id: commentId,
             body
           });
         } else {
-          await octokit.issues.createComment({
+          await octokit.rest.issues.createComment({
             ...oktokitParams,
             issue_number: number,
             body
           });
         }
       } else {
-        await octokit.issues.createComment({
+        await octokit.rest.issues.createComment({
           ...oktokitParams,
           issue_number: number,
           body
@@ -132,7 +132,7 @@ const run = async () => {
       }
     } else {
       if (updateComment && commentId) {
-        await octokit.issues.deleteComment({
+        await octokit.rest.issues.deleteComment({
           ...oktokitParams,
           comment_id: commentId
         });
