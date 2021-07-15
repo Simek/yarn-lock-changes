@@ -10,7 +10,7 @@ const { STATUS, countStatuses, createTable, createSummary, diffLocks } = require
 const COMMENT_HEADER = '## `yarn.lock` changes';
 
 const getCommentId = async (octokit, oktokitParams, issueNumber) => {
-  const currentComments = await octokit.issues.listComments({
+  const currentComments = await octokit.rest.issues.listComments({
     ...oktokitParams,
     issue_number: issueNumber,
     per_page: 100
