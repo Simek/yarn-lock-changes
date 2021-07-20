@@ -77,7 +77,7 @@ const run = async () => {
     const lockChanges = diffLocks(masterLock, updatedLock);
     const lockChangesCount = Object.keys(lockChanges).length;
 
-    const commentHeader = '## `' + lockPath + '` changes';
+    const commentHeader = '## `' + inputPath + '` changes';
     const commentId = updateComment
       ? await getCommentId(octokit, oktokitParams, number, commentHeader)
       : undefined;
