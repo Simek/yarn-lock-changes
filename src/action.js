@@ -7,9 +7,7 @@ const path = require('path');
 
 const { STATUS, countStatuses, createTable, createSummary, diffLocks } = require('./utils');
 
-const COMMENT_HEADER = '## `yarn.lock` changes';
-
-const getCommentId = async (octokit, oktokitParams, issueNumber) => {
+const getCommentId = async (octokit, oktokitParams, issueNumber, commentHeader) => {
   const currentComments = await octokit.rest.issues.listComments({
     ...oktokitParams,
     issue_number: issueNumber,
@@ -22,7 +20,7 @@ const getCommentId = async (octokit, oktokitParams, issueNumber) => {
 
   return currentComments.data
     .filter(
-      ({ user, body }) => user.login === 'github-actions[bot]' && body.startsWith(COMMENT_HEADER)
+      ({ user, body }) => user.login === 'github-actions[bot]' && body.startsWith(commentHeader)
     )
     .map(({ id }) => id)[0];
 };
@@ -79,8 +77,9 @@ const run = async () => {
     const lockChanges = diffLocks(masterLock, updatedLock);
     const lockChangesCount = Object.keys(lockChanges).length;
 
+    const commentHeader = '## `' + lockPath + '` changes';
     const commentId = updateComment
-      ? await getCommentId(octokit, oktokitParams, number)
+      ? await getCommentId(octokit, oktokitParams, number, commentHeader)
       : undefined;
 
     if (lockChangesCount) {
@@ -92,12 +91,9 @@ const run = async () => {
 
       const collapsed = lockChangesCount >= collapsibleThreshold;
       const changesSummary = collapsed ? '### Summary\n' + createSummary(lockChanges) : '';
-      const lockPathNote = inputPath !== 'yarn.lock' ? '> Lock path: `' + inputPath + '`\n' : '';
 
       const body =
-        COMMENT_HEADER +
-        '\n' +
-        lockPathNote +
+        commentHeader +
         '\n' +
         changesSummary +
         '\n' +
