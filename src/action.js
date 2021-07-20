@@ -15,7 +15,7 @@ const getCommentId = async (octokit, oktokitParams, issueNumber, commentHeader) 
   });
 
   if (!currentComments || !currentComments.data) {
-    throw Error('💥 Cannot fetch PR comments, aborting!');
+    throw Error('💥 Cannot fetch PR comments data, aborting!');
   }
 
   return currentComments.data
@@ -41,13 +41,15 @@ const run = async () => {
     const oktokitParams = { owner, repo };
 
     if (!number) {
-      throw Error('💥 Cannot find the PR, aborting!');
+      throw Error('💥 Cannot find the PR data in the workflow context, aborting!');
     }
 
     const lockPath = path.resolve(process.cwd(), inputPath);
 
     if (!fs.existsSync(lockPath)) {
-      throw Error('💥 It looks like lock does not exist in this PR, aborting!');
+      throw Error(
+        '💥 The code has not been checkout or the lock file does not exist in this PR, aborting!'
+      );
     }
 
     const content = fs.readFileSync(lockPath, { encoding: 'utf8' });
@@ -60,7 +62,7 @@ const run = async () => {
     });
 
     if (!baseTree || !baseTree.data || !baseTree.data.tree) {
-      throw Error('💥 Cannot fetch base branch tree, aborting!');
+      throw Error('💥 Cannot fetch repository base branch tree, aborting!');
     }
 
     const baseLockSHA = baseTree.data.tree.filter((file) => file.path === 'yarn.lock')[0].sha;
@@ -70,7 +72,7 @@ const run = async () => {
     });
 
     if (!masterLockData || !masterLockData.data || !masterLockData.data.content) {
-      throw Error('💥 Cannot fetch base lock, aborting!');
+      throw Error('💥 Cannot fetch repository base lock file, aborting!');
     }
 
     const masterLock = lockfile.parse(Base64.decode(masterLockData.data.content));
@@ -136,7 +138,7 @@ const run = async () => {
     }
 
     if (failOnDowngrade && countStatuses(STATUS.DOWNGRADED)) {
-      throw Error('🚨 Downgrade detected, failing the action!');
+      throw Error('🚨 Dependency downgrade detected, failing the action!');
     }
   } catch (error) {
     setFailed(error.message);
