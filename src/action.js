@@ -63,7 +63,9 @@ const run = async () => {
       throw Error('💥 Cannot fetch base branch tree, aborting!');
     }
 
-    const baseLockSHA = baseTree.data.tree.filter((file) => file.path === 'yarn.lock')[0].sha;
+    console.warn(baseTree.data.tree)
+
+    const baseLockSHA = baseTree.data.tree.filter((file) => file.path === inputPath)[0].sha;
     const masterLockData = await octokit.request('GET /repos/{owner}/{repo}/git/blobs/{file_sha}', {
       ...oktokitParams,
       file_sha: baseLockSHA
