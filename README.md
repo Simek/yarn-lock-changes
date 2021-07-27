@@ -23,8 +23,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      # Please use `main` as version before the stable release will be published as `v1`
       - name: Yarn Lock Changes
-        # Please use `main` before the stable release will be published as `v1`
         uses: Simek/yarn-lock-changes@main
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -57,7 +57,7 @@ jobs:
 
 ## 📋 Common issues
 
-### The action fails on Dependabot pull requests
+### The action fails on the Dependabot pull requests
 
 Due to the security reasons from March 1st, 2021 workflow runs that are triggered by Dependabot have permissions reduced by default: 
 
