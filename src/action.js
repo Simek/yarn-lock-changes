@@ -36,8 +36,6 @@ const run = async () => {
     const failOnDowngrade = getBooleanInput('failOnDowngrade');
     const collapsibleThreshold = Math.max(parseInt(getInput('collapsibleThreshold'), 10), 0);
 
-    console.warn(context.payload.pull_request)
-
     const { owner, repo, number } = context.issue;
     const { ref } = context.payload.pull_request.base;
     const oktokitParams = { owner, repo };
