@@ -38,6 +38,7 @@ const run = async () => {
 
     const { owner, repo, number } = context.issue;
     const { ref } = context.payload.pull_request.base;
+    const { default_branch } = context.payload.repository;
     const oktokitParams = { owner, repo };
 
     if (!number) {
@@ -57,7 +58,7 @@ const run = async () => {
 
     const baseTree = await octokit.request('GET /repos/{owner}/{repo}/git/trees/{branch}:{path}', {
       ...oktokitParams,
-      branch: ref,
+      branch: ref || default_branch,
       path: getBasePathFromInput(inputPath)
     });
 
