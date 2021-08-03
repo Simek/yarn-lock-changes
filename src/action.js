@@ -37,7 +37,7 @@ const run = async () => {
     const collapsibleThreshold = Math.max(parseInt(getInput('collapsibleThreshold'), 10), 0);
 
     const { owner, repo, number } = context.issue;
-    const { default_branch } = context.payload.repository;
+    const { ref } = context.payload.pull_request.base;
     const oktokitParams = { owner, repo };
 
     if (!number) {
@@ -57,7 +57,7 @@ const run = async () => {
 
     const baseTree = await octokit.request('GET /repos/{owner}/{repo}/git/trees/{branch}:{path}', {
       ...oktokitParams,
-      branch: default_branch,
+      branch: ref,
       path: getBasePathFromInput(inputPath)
     });
 
