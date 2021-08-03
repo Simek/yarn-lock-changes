@@ -36,10 +36,10 @@ const run = async () => {
     const failOnDowngrade = getBooleanInput('failOnDowngrade');
     const collapsibleThreshold = Math.max(parseInt(getInput('collapsibleThreshold'), 10), 0);
 
-    console.warn(context.ref, context.payload)
+    console.warn(context.payload.pull_request)
 
     const { owner, repo, number } = context.issue;
-    const { default_branch } = context.payload.repository;
+    const { ref } = context.payload.pull_request.base;
     const oktokitParams = { owner, repo };
 
     if (!number) {
@@ -59,7 +59,7 @@ const run = async () => {
 
     const baseTree = await octokit.request('GET /repos/{owner}/{repo}/git/trees/{branch}:{path}', {
       ...oktokitParams,
-      branch: context.ref || default_branch,
+      branch: ref,
       path: getBasePathFromInput(inputPath)
     });
 
