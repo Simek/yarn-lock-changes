@@ -15,7 +15,7 @@ export const STATUS = {
   UPDATED: 'UPDATED'
 };
 
-const getStatusLabel = (status) =>
+const getStatusLabel = status =>
   `[<sub><img alt="${status}" src="${ASSETS_URL[status]}" height="16" /></sub>](#)`;
 
 export const createTable = (lockChanges, plainStatuses = false) =>
@@ -42,7 +42,7 @@ const createSummaryRow = (lockChanges, status) => {
   return statusCount ? [getStatusLabel(status), statusCount] : undefined;
 };
 
-export const createSummary = (lockChanges) =>
+export const createSummary = lockChanges =>
   markdownTable(
     [
       ['Status', 'Count'],
@@ -54,9 +54,9 @@ export const createSummary = (lockChanges) =>
     { align: ['l', 'c'], alignDelimiters: false }
   );
 
-const formatLockEntry = (obj) =>
+const formatLockEntry = obj =>
   Object.fromEntries(
-    Object.keys(obj.object).map((key) => {
+    Object.keys(obj.object).map(key => {
       const nameParts = key.split('@');
       const name = nameParts[0] === '' ? '@' + nameParts[1] : nameParts[0];
       return [name, { name, version: obj.object[key].version }];
@@ -68,7 +68,7 @@ export const diffLocks = (previous, current) => {
   const previousPackages = formatLockEntry(previous);
   const currentPackages = formatLockEntry(current);
 
-  Object.keys(previousPackages).forEach((key) => {
+  Object.keys(previousPackages).forEach(key => {
     changes[key] = {
       previous: previousPackages[key].version,
       current: '-',
@@ -76,7 +76,7 @@ export const diffLocks = (previous, current) => {
     };
   });
 
-  Object.keys(currentPackages).forEach((key) => {
+  Object.keys(currentPackages).forEach(key => {
     if (!changes[key]) {
       changes[key] = {
         previous: '-',

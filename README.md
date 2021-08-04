@@ -76,3 +76,9 @@ jobs:
     steps:
       ...
 ```
+
+## 🔍️ Debugging
+
+To run action in the debug mode you need to add the `ACTIONS_STEP_DEBUG` repository secret and set it to `true`, as stated in the [GitHub documentation](https://docs.github.com/en/actions/managing-workflow-runs/enabling-debug-logging#enabling-step-debug-logging).
+
+Then additional information which might be useful for the users when debugging the issues will be available in the action output, prefixed by `##[debug]`.
