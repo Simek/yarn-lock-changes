@@ -1,11 +1,18 @@
-const { debug, isDebug, getBooleanInput, getInput, setFailed } = require('@actions/core');
+const { debug, getBooleanInput, getInput, setFailed } = require('@actions/core');
 const { context, getOctokit } = require('@actions/github');
 const lockfile = require('@yarnpkg/lockfile');
 const fs = require('fs');
 const { Base64 } = require('js-base64');
 const path = require('path');
 
-const { STATUS, countStatuses, createTable, createSummary, diffLocks } = require('./utils');
+const {
+  STATUS,
+  countStatuses,
+  createTable,
+  createSummary,
+  diffLocks,
+  isDebugMode
+} = require('./utils');
 
 const getCommentId = async (octokit, oktokitParams, issueNumber, commentHeader) => {
   const currentComments = await octokit.rest.issues.listComments({
@@ -30,8 +37,8 @@ const getBasePathFromInput = input =>
 
 const run = async () => {
   try {
-    const isDebugMode = isDebug();
-    const logDebug = message => isDebugMode ? debug(message) : undefined;
+    const debugActive = isDebugMode();
+    const logDebug = message => (debugActive ? debug(message) : undefined);
 
     const octokit = getOctokit(getInput('token', { required: true }));
     const inputPath = getInput('path');
@@ -49,7 +56,7 @@ const run = async () => {
     const { default_branch } = context.payload.repository;
 
     const baseBranch = ref || default_branch;
-    logDebug('Base branch:' + baseBranch);
+    logDebug('Base branch: ' + baseBranch);
 
     const lockPath = path.resolve(process.cwd(), inputPath);
 
@@ -63,9 +70,10 @@ const run = async () => {
     const updatedLock = lockfile.parse(content);
 
     const oktokitParams = { owner, repo };
+    logDebug('Oktokit params: ' + JSON.stringify(oktokitParams));
 
     const basePath = getBasePathFromInput(inputPath);
-    logDebug('Base lockfile path:' + basePath);
+    logDebug('Base lockfile path: ' + basePath);
 
     const baseTree = await octokit.request('GET /repos/{owner}/{repo}/git/trees/{branch}:{path}', {
       ...oktokitParams,
@@ -78,7 +86,7 @@ const run = async () => {
     }
 
     const baseLockSHA = baseTree.data.tree.filter(file => file.path === 'yarn.lock')[0].sha;
-    logDebug('Base lockfile SHA:' + baseLockSHA);
+    logDebug('Base lockfile SHA: ' + baseLockSHA);
 
     const baseLockData = await octokit.request('GET /repos/{owner}/{repo}/git/blobs/{file_sha}', {
       ...oktokitParams,
@@ -97,7 +105,7 @@ const run = async () => {
     const commentId = updateComment
       ? await getCommentId(octokit, oktokitParams, number, commentHeader)
       : undefined;
-    logDebug('Comment ID:' + commentId);
+    logDebug('Bot comment ID: ' + commentId);
 
     if (lockChangesCount) {
       let diffsTable = createTable(lockChanges);

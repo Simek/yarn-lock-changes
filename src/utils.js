@@ -1,3 +1,4 @@
+const { isDebug } = require('@actions/core');
 const compareVersions = require('compare-versions');
 const { markdownTable } = require('markdown-table');
 
@@ -99,3 +100,8 @@ export const diffLocks = (previous, current) => {
 
   return changes;
 };
+
+export const isDebugMode = () =>
+  isDebug() ||
+  process.env['ACTIONS_RUNNER_DEBUG'] === '1' ||
+  process.env['ACTIONS_STEP_DEBUG'] === '1';
