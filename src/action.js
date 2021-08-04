@@ -150,8 +150,8 @@ const run = async () => {
       }
     }
 
-    if (countStatuses(STATUS.DOWNGRADED)) {
-      warning('🚨 Dependency downgrade detected!');
+    if (countStatuses(lockChanges, STATUS.DOWNGRADED)) {
+      warning('Dependency downgrade detected!');
 
       if (failOnDowngrade) {
         throw Error('🚨 Dependency downgrade with `failOnDowngrade` flag set, failing the action!');
