@@ -1,18 +1,11 @@
-const { debug, getBooleanInput, getInput, setFailed } = require('@actions/core');
+const { debug, getBooleanInput, getInput, setFailed, warning } = require('@actions/core');
 const { context, getOctokit } = require('@actions/github');
 const lockfile = require('@yarnpkg/lockfile');
 const fs = require('fs');
 const { Base64 } = require('js-base64');
 const path = require('path');
 
-const {
-  STATUS,
-  countStatuses,
-  createTable,
-  createSummary,
-  diffLocks,
-  isDebugMode
-} = require('./utils');
+const { STATUS, countStatuses, createTable, createSummary, diffLocks } = require('./utils');
 
 const getCommentId = async (octokit, oktokitParams, issueNumber, commentHeader) => {
   const currentComments = await octokit.rest.issues.listComments({
@@ -37,9 +30,6 @@ const getBasePathFromInput = input =>
 
 const run = async () => {
   try {
-    const debugActive = isDebugMode();
-    const logDebug = message => (debugActive ? debug(message) : undefined);
-
     const octokit = getOctokit(getInput('token', { required: true }));
     const inputPath = getInput('path');
     const updateComment = getBooleanInput('updateComment');
@@ -56,7 +46,7 @@ const run = async () => {
     const { default_branch } = context.payload.repository;
 
     const baseBranch = ref || default_branch;
-    logDebug('Base branch: ' + baseBranch);
+    debug('Base branch: ' + baseBranch);
 
     const lockPath = path.resolve(process.cwd(), inputPath);
 
@@ -70,10 +60,10 @@ const run = async () => {
     const updatedLock = lockfile.parse(content);
 
     const oktokitParams = { owner, repo };
-    logDebug('Oktokit params: ' + JSON.stringify(oktokitParams));
+    debug('Oktokit params: ' + JSON.stringify(oktokitParams));
 
     const basePath = getBasePathFromInput(inputPath);
-    logDebug('Base lockfile path: ' + basePath);
+    debug('Base lockfile path: ' + basePath);
 
     const baseTree = await octokit.request('GET /repos/{owner}/{repo}/git/trees/{branch}:{path}', {
       ...oktokitParams,
@@ -86,7 +76,7 @@ const run = async () => {
     }
 
     const baseLockSHA = baseTree.data.tree.filter(file => file.path === 'yarn.lock')[0].sha;
-    logDebug('Base lockfile SHA: ' + baseLockSHA);
+    debug('Base lockfile SHA: ' + baseLockSHA);
 
     const baseLockData = await octokit.request('GET /repos/{owner}/{repo}/git/blobs/{file_sha}', {
       ...oktokitParams,
@@ -105,7 +95,7 @@ const run = async () => {
     const commentId = updateComment
       ? await getCommentId(octokit, oktokitParams, number, commentHeader)
       : undefined;
-    logDebug('Bot comment ID: ' + commentId);
+    debug('Bot comment ID: ' + commentId);
 
     if (lockChangesCount) {
       let diffsTable = createTable(lockChanges);
@@ -160,8 +150,12 @@ const run = async () => {
       }
     }
 
-    if (failOnDowngrade && countStatuses(STATUS.DOWNGRADED)) {
-      throw Error('🚨 Dependency downgrade detected, failing the action!');
+    if (countStatuses(STATUS.DOWNGRADED)) {
+      warning('🚨 Dependency downgrade detected!');
+
+      if (failOnDowngrade) {
+        throw Error('🚨 Dependency downgrade with `failOnDowngrade` flag set, failing the action!');
+      }
     }
   } catch (error) {
     setFailed(error.message);
