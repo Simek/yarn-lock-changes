@@ -76,3 +76,10 @@ jobs:
     steps:
       ...
 ```
+
+## 🔍️ Debugging
+
+To run action in the debug mode you need to add the `ACTIONS_RUNNER_DEBUG` repository secret set to `true`, as stated in the GitHub documentation:
+* https://docs.github.com/en/actions/managing-workflow-runs/enabling-debug-logging#enabling-runner-diagnostic-logging
+
+Then additional information will appear in the action output, which might be useful when debugging the issue.

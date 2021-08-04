@@ -1,4 +1,4 @@
-const { getBooleanInput, getInput, setFailed } = require('@actions/core');
+const { debug, isDebug, getBooleanInput, getInput, setFailed } = require('@actions/core');
 const { context, getOctokit } = require('@actions/github');
 const lockfile = require('@yarnpkg/lockfile');
 const fs = require('fs');
@@ -25,11 +25,14 @@ const getCommentId = async (octokit, oktokitParams, issueNumber, commentHeader) 
     .map(({ id }) => id)[0];
 };
 
-const getBasePathFromInput = (input) =>
+const getBasePathFromInput = input =>
   input.lastIndexOf('/') ? input.substring(0, input.lastIndexOf('/')) : '';
 
 const run = async () => {
   try {
+    const isDebugMode = isDebug();
+    const logDebug = message => isDebugMode ? debug(message) : undefined;
+
     const octokit = getOctokit(getInput('token', { required: true }));
     const inputPath = getInput('path');
     const updateComment = getBooleanInput('updateComment');
@@ -37,13 +40,16 @@ const run = async () => {
     const collapsibleThreshold = Math.max(parseInt(getInput('collapsibleThreshold'), 10), 0);
 
     const { owner, repo, number } = context.issue;
-    const { ref } = context.payload.pull_request.base;
-    const { default_branch } = context.payload.repository;
-    const oktokitParams = { owner, repo };
 
     if (!number) {
       throw Error('💥 Cannot find the PR data in the workflow context, aborting!');
     }
+
+    const { ref } = context.payload.pull_request.base;
+    const { default_branch } = context.payload.repository;
+
+    const baseBranch = ref || default_branch;
+    logDebug('Base branch:' + baseBranch);
 
     const lockPath = path.resolve(process.cwd(), inputPath);
 
@@ -56,34 +62,42 @@ const run = async () => {
     const content = fs.readFileSync(lockPath, { encoding: 'utf8' });
     const updatedLock = lockfile.parse(content);
 
+    const oktokitParams = { owner, repo };
+
+    const basePath = getBasePathFromInput(inputPath);
+    logDebug('Base lockfile path:' + basePath);
+
     const baseTree = await octokit.request('GET /repos/{owner}/{repo}/git/trees/{branch}:{path}', {
       ...oktokitParams,
-      branch: ref || default_branch,
-      path: getBasePathFromInput(inputPath)
+      branch: baseBranch,
+      path: basePath
     });
 
     if (!baseTree || !baseTree.data || !baseTree.data.tree) {
       throw Error('💥 Cannot fetch repository base branch tree, aborting!');
     }
 
-    const baseLockSHA = baseTree.data.tree.filter((file) => file.path === 'yarn.lock')[0].sha;
-    const masterLockData = await octokit.request('GET /repos/{owner}/{repo}/git/blobs/{file_sha}', {
+    const baseLockSHA = baseTree.data.tree.filter(file => file.path === 'yarn.lock')[0].sha;
+    logDebug('Base lockfile SHA:' + baseLockSHA);
+
+    const baseLockData = await octokit.request('GET /repos/{owner}/{repo}/git/blobs/{file_sha}', {
       ...oktokitParams,
       file_sha: baseLockSHA
     });
 
-    if (!masterLockData || !masterLockData.data || !masterLockData.data.content) {
+    if (!baseLockData || !baseLockData.data || !baseLockData.data.content) {
       throw Error('💥 Cannot fetch repository base lock file, aborting!');
     }
 
-    const masterLock = lockfile.parse(Base64.decode(masterLockData.data.content));
-    const lockChanges = diffLocks(masterLock, updatedLock);
+    const baseLock = lockfile.parse(Base64.decode(baseLockData.data.content));
+    const lockChanges = diffLocks(baseLock, updatedLock);
     const lockChangesCount = Object.keys(lockChanges).length;
 
     const commentHeader = '## `' + inputPath + '` changes';
     const commentId = updateComment
       ? await getCommentId(octokit, oktokitParams, number, commentHeader)
       : undefined;
+    logDebug('Comment ID:' + commentId);
 
     if (lockChangesCount) {
       let diffsTable = createTable(lockChanges);
