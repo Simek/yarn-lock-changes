@@ -1,12 +1,6 @@
-const compareVersions = require('compare-versions');
-const { markdownTable } = require('markdown-table');
-
-const ASSETS_URL = {
-  ADDED: 'https://git.io/J38HP',
-  DOWNGRADED: 'https://git.io/J38ds',
-  REMOVED: 'https://git.io/J38dt',
-  UPDATED: 'https://git.io/J38dY'
-};
+const semverCompare = require('semver/functions/compare');
+const semverCoerce = require('semver/functions/coerce');
+const semverValid = require('semver/functions/valid');
 
 export const STATUS = {
   ADDED: 'ADDED',
@@ -15,52 +9,31 @@ export const STATUS = {
   UPDATED: 'UPDATED'
 };
 
-const getStatusLabel = status =>
-  `[<sub><img alt="${status}" src="${ASSETS_URL[status]}" height="16" /></sub>](#)`;
-
-export const createTable = (lockChanges, plainStatuses = false) =>
-  markdownTable(
-    [
-      ['Name', 'Status', 'Previous', 'Current'],
-      ...Object.entries(lockChanges)
-        .map(([key, { status, previous, current }]) => [
-          '`' + key + '`',
-          plainStatuses ? status : getStatusLabel(status),
-          previous,
-          current
-        ])
-        .sort((a, b) => a[0].localeCompare(b[0]))
-    ],
-    { align: ['l', 'c', 'c', 'c'], alignDelimiters: false }
-  );
-
 export const countStatuses = (lockChanges, statusToCount) =>
   Object.values(lockChanges).filter(({ status }) => status === statusToCount).length;
 
-const createSummaryRow = (lockChanges, status) => {
-  const statusCount = countStatuses(lockChanges, status);
-  return statusCount ? [getStatusLabel(status), statusCount] : undefined;
-};
+const formatForNameCompare = key => key.substr(0, key.lastIndexOf('@'));
 
-export const createSummary = lockChanges =>
-  markdownTable(
-    [
-      ['Status', 'Count'],
-      createSummaryRow(lockChanges, STATUS.ADDED),
-      createSummaryRow(lockChanges, STATUS.UPDATED),
-      createSummaryRow(lockChanges, STATUS.DOWNGRADED),
-      createSummaryRow(lockChanges, STATUS.REMOVED)
-    ].filter(Boolean),
-    { align: ['l', 'c'], alignDelimiters: false }
-  );
+const formatForVersionCompare = key => {
+  const version = key.substr(key.lastIndexOf('@') + 1);
+  return semverValid(semverCoerce(version)) || '0.0.0';
+};
 
 const formatLockEntry = obj =>
   Object.fromEntries(
-    Object.keys(obj.object).map(key => {
-      const nameParts = key.split('@');
-      const name = nameParts[0] === '' ? '@' + nameParts[1] : nameParts[0];
-      return [name, { name, version: obj.object[key].version }];
-    })
+    Object.keys(obj.object)
+      .sort((a, b) => {
+        const nameCompare = formatForNameCompare(a).localeCompare(formatForNameCompare(b));
+        if (nameCompare === 0) {
+          return semverCompare(formatForVersionCompare(a), formatForVersionCompare(b));
+        }
+        return nameCompare;
+      })
+      .map(key => {
+        const nameParts = key.split('@');
+        const name = nameParts[0] === '' ? '@' + nameParts[1] : nameParts[0];
+        return [name, { name, version: obj.object[key].version }];
+      })
   );
 
 export const diffLocks = (previous, current) => {
@@ -88,7 +61,7 @@ export const diffLocks = (previous, current) => {
         delete changes[key];
       } else {
         changes[key].current = currentPackages[key].version;
-        if (compareVersions(changes[key].previous, changes[key].current) === 1) {
+        if (semverCompare(changes[key].previous, changes[key].current) === 1) {
           changes[key].status = STATUS.DOWNGRADED;
         } else {
           changes[key].status = STATUS.UPDATED;

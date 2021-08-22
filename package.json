@@ -7,22 +7,28 @@
   "license": "MIT",
   "scripts": {
     "compile": "ncc build ./src/action.js -m",
-    "lint": "eslint ./src",
-    "optimize": "svgo -f ./assets"
+    "lint": "eslint .",
+    "optimize": "svgo -f ./assets",
+    "test": "jest"
   },
   "dependencies": {
-    "@actions/core": "^1.4.0",
+    "@actions/core": "^1.5.0",
     "@actions/github": "^5.0.0",
     "@yarnpkg/lockfile": "^1.1.0",
-    "compare-versions": "^3.6.0",
     "js-base64": "^3.6.1",
-    "markdown-table": "^3.0.1"
+    "markdown-table": "^3.0.1",
+    "semver": "^7.3.5"
   },
   "devDependencies": {
+    "@babel/core": "^7.15.0",
+    "@babel/preset-env": "^7.15.0",
+    "babel-jest": "^27.0.6",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-prettier": "^3.4.0",
+    "eslint-plugin-jest": "^24.4.0",
+    "eslint-plugin-prettier": "^3.4.1",
+    "jest": "^27.0.6",
     "prettier": "^2.3.2",
-    "svgo": "^2.3.1"
+    "svgo": "^2.4.0"
   }
 }

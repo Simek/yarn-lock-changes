@@ -4,9 +4,10 @@
     "es2021": true,
     "node": true
   },
-  "plugins": ["prettier"],
+  "plugins": ["jest", "prettier"],
   "extends": [
     "eslint:recommended",
+    "plugin:jest/recommended",
     "plugin:prettier/recommended"
   ],
   "parserOptions": {
@@ -20,5 +21,6 @@
     "prefer-const": "error",
     "quotes": ["error", "single"],
     "semi": ["error", "always"]
-  }
+  },
+  "ignorePatterns": ["dist", "node_modules"]
 }
