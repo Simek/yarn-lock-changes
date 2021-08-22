@@ -1,4 +1,6 @@
-const compareVersions = require('compare-versions');
+const semverCompare = require('semver/functions/compare');
+const semverCoerce = require('semver/functions/coerce');
+const semverValid = require('semver/functions/valid');
 
 export const STATUS = {
   ADDED: 'ADDED',
@@ -10,10 +12,23 @@ export const STATUS = {
 export const countStatuses = (lockChanges, statusToCount) =>
   Object.values(lockChanges).filter(({ status }) => status === statusToCount).length;
 
+const formatForNameCompare = key => key.substr(0, key.lastIndexOf('@'));
+
+const formatForVersionCompare = key => {
+  const version = key.substr(key.lastIndexOf('@') + 1);
+  return semverValid(semverCoerce(version)) || '0.0.0';
+};
+
 const formatLockEntry = obj =>
   Object.fromEntries(
     Object.keys(obj.object)
-      .sort((a, b) => a.localeCompare(b))
+      .sort((a, b) => {
+        const nameCompare = formatForNameCompare(a).localeCompare(formatForNameCompare(b));
+        if (nameCompare === 0) {
+          return semverCompare(formatForVersionCompare(a), formatForVersionCompare(b));
+        }
+        return nameCompare;
+      })
       .map(key => {
         const nameParts = key.split('@');
         const name = nameParts[0] === '' ? '@' + nameParts[1] : nameParts[0];
@@ -46,7 +61,7 @@ export const diffLocks = (previous, current) => {
         delete changes[key];
       } else {
         changes[key].current = currentPackages[key].version;
-        if (compareVersions(changes[key].previous, changes[key].current) === 1) {
+        if (semverCompare(changes[key].previous, changes[key].current) === 1) {
           changes[key].status = STATUS.DOWNGRADED;
         } else {
           changes[key].status = STATUS.UPDATED;
