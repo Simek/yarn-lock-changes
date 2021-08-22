@@ -7,8 +7,9 @@
   "license": "MIT",
   "scripts": {
     "compile": "ncc build ./src/action.js -m",
-    "lint": "eslint ./src",
-    "optimize": "svgo -f ./assets"
+    "lint": "eslint .",
+    "optimize": "svgo -f ./assets",
+    "test": "jest"
   },
   "dependencies": {
     "@actions/core": "^1.4.0",
@@ -19,9 +20,14 @@
     "markdown-table": "^3.0.1"
   },
   "devDependencies": {
+    "@babel/core": "^7.15.0",
+    "@babel/preset-env": "^7.15.0",
+    "babel-jest": "^27.0.6",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-jest": "^24.4.0",
     "eslint-plugin-prettier": "^3.4.0",
+    "jest": "^27.0.6",
     "prettier": "^2.3.2",
     "svgo": "^2.3.1"
   }

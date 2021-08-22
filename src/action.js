@@ -5,7 +5,8 @@ const fs = require('fs');
 const { Base64 } = require('js-base64');
 const path = require('path');
 
-const { STATUS, countStatuses, createTable, createSummary, diffLocks } = require('./utils');
+const { STATUS, countStatuses, diffLocks } = require('./utils');
+const { createTable, createSummary } = require('./comment');
 
 const getCommentId = async (octokit, oktokitParams, issueNumber, commentHeader) => {
   const currentComments = await octokit.rest.issues.listComments({
