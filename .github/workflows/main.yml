@@ -13,7 +13,7 @@ jobs:
         uses: ./
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-      - name: [Test] Yarn Lock Changes Detached Package
+      - name: '[Test] Yarn Lock Changes Detached Package'
         uses: ./
         with:
           path: tests/ci/yarn.lock
