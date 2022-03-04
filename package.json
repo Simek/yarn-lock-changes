@@ -20,7 +20,7 @@
     "semver": "^7.3.5"
   },
   "devDependencies": {
-    "@babel/core": "^7.16.5",
+    "@babel/core": "^7.16.12",
     "@babel/preset-env": "^7.16.11",
     "@vercel/ncc": "^0.33.3",
     "babel-jest": "^27.5.1",
