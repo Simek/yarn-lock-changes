@@ -8,7 +8,7 @@ const getTestLockContent = (testName, filename) => {
   const content = fs.readFileSync(
     path.resolve(process.cwd(), './tests/unit/', testName, filename),
     {
-      encoding: 'utf8'
+      encoding: 'utf8',
     }
   );
   return content;

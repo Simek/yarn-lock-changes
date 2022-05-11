@@ -1,12 +1,16 @@
 const { debug, getBooleanInput, getInput, setFailed, warning } = require('@actions/core');
 const { context, getOctokit } = require('@actions/github');
 const lockfile = require('@yarnpkg/lockfile');
+const PackageLockParser =
+  require('snyk-nodejs-lockfile-parser/dist/parsers/package-lock-parser').PackageLockParser;
 const fs = require('fs');
 const { Base64 } = require('js-base64');
 const path = require('path');
 
 const { STATUS, countStatuses, diffLocks } = require('./utils');
 const { createTable, createSummary } = require('./comment');
+
+const packageLockParser = new PackageLockParser();
 
 const getCommentId = async (octokit, oktokitParams, issueNumber, commentHeader) => {
   const currentComments = await octokit.rest.issues.listComments({
@@ -58,7 +62,9 @@ const run = async () => {
     }
 
     const content = fs.readFileSync(lockPath, { encoding: 'utf8' });
-    const updatedLock = lockfile.parse(content);
+    // const updatedLock = lockfile.parse(content);
+    const updatedLock = packageLockParser.parseLockFile(content);
+    console.log({ content, updatedLock });
 
     const oktokitParams = { owner, repo };
     debug('Oktokit params: ' + JSON.stringify(oktokitParams));
@@ -69,19 +75,19 @@ const run = async () => {
     const baseTree = await octokit.request('GET /repos/{owner}/{repo}/git/trees/{branch}:{path}', {
       ...oktokitParams,
       branch: baseBranch,
-      path: basePath
+      path: basePath,
     });
 
     if (!baseTree || !baseTree.data || !baseTree.data.tree) {
       throw Error('💥 Cannot fetch repository base branch tree, aborting!');
     }
 
-    const baseLockSHA = baseTree.data.tree.filter(file => file.path === 'yarn.lock')[0].sha;
+    const baseLockSHA = baseTree.data.tree.filter((file) => file.path === 'yarn.lock')[0].sha;
     debug('Base lockfile SHA: ' + baseLockSHA);
 
     const baseLockData = await octokit.request('GET /repos/{owner}/{repo}/git/blobs/{file_sha}', {
       ...oktokitParams,
-      file_sha: baseLockSHA
+      file_sha: baseLockSHA,
     });
 
     if (!baseLockData || !baseLockData.data || !baseLockData.data.content) {
@@ -126,27 +132,27 @@ const run = async () => {
           await octokit.rest.issues.updateComment({
             ...oktokitParams,
             comment_id: commentId,
-            body
+            body,
           });
         } else {
           await octokit.rest.issues.createComment({
             ...oktokitParams,
             issue_number: number,
-            body
+            body,
           });
         }
       } else {
         await octokit.rest.issues.createComment({
           ...oktokitParams,
           issue_number: number,
-          body
+          body,
         });
       }
     } else {
       if (updateComment && commentId) {
         await octokit.rest.issues.deleteComment({
           ...oktokitParams,
-          comment_id: commentId
+          comment_id: commentId,
         });
       }
     }

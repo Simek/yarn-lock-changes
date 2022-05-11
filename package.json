@@ -1,9 +1,9 @@
 {
-  "name": "yarn-lock-changes",
-  "version": "0.9.0",
+  "name": "npm-lockfile-changes",
+  "version": "1.0.0",
   "main": "dist/index.js",
-  "repository": "github:Simek/yarn-lock-changes",
-  "author": "Simek <me@simek.dev>",
+  "repository": "github:codepunkt/npm-lockfile-changes",
+  "author": "Christoph Werner <christoph@codepunkt.de>",
   "license": "MIT",
   "scripts": {
     "build": "ncc build ./src/action.js -m --target es2021",
@@ -17,7 +17,8 @@
     "@yarnpkg/lockfile": "^1.1.0",
     "js-base64": "^3.7.2",
     "markdown-table": "^3.0.2",
-    "semver": "^7.3.7"
+    "semver": "^7.3.7",
+    "snyk-nodejs-lockfile-parser": "^1.38.0"
   },
   "devDependencies": {
     "@babel/core": "^7.17.9",
