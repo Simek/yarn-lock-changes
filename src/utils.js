@@ -1,3 +1,5 @@
+const { warning } = require('@actions/core');
+
 const semverCompare = require('semver/functions/compare');
 const semverCoerce = require('semver/functions/coerce');
 const semverValid = require('semver/functions/valid');
@@ -36,17 +38,122 @@ const formatLockEntry = obj =>
       })
   );
 
+const detectYarnVersion = lines => {
+  if (lines[1].includes('v1')) {
+    return {
+      version: 1,
+      skipLines: 4
+    };
+  } else if (lines[4].includes('version:')) {
+    const lockVersion = lines[4].split('version: ')[1];
+    return {
+      version: lockVersion <= 4 ? 2 : 3,
+      skipLines: 7
+    };
+  }
+  return {
+    version: undefined,
+    skipLines: undefined
+  };
+};
+
+const constructClassicEntry = entryLines => {
+  const keys = entryLines[0].replaceAll(':', '').split(',');
+
+  const dependencies = entryLines[4]
+    ? Object.assign(
+        {},
+        ...entryLines.splice(5).map(dependencyLine => {
+          const parts = dependencyLine.trim().split(' ');
+          if (parts.length === 2) {
+            return {
+              [parts[0]]: parts[1]
+            };
+          } else {
+            return {};
+          }
+        })
+      )
+    : undefined;
+
+  const entryObject = {
+    version: entryLines[1].split('version ')[1],
+    resolved: entryLines[2].split('resolved ')[1],
+    integrity: entryLines[3].split('integrity ')[1],
+    dependencies
+  };
+
+  return Object.assign({}, ...keys.map(key => ({ [key.trim()]: entryObject })));
+};
+
+const constructBerryEntry = entryLines => {
+  const keys = entryLines[0]
+    .replaceAll('@npm:', '@')
+    .replaceAll('@yarn:', '@')
+    .replaceAll('@workspace:', '@')
+    .replaceAll(':', '')
+    .split(',');
+
+  const endFields = entryLines.splice(-4);
+  const peerBlockStart = entryLines.findIndex(entry => entry.includes('peerDependencies:'));
+  const peerFields =
+    peerBlockStart !== -1 ? entryLines.splice(-(entryLines.length - peerBlockStart)) : undefined;
+
+  const dependencies = entryLines[3]?.includes('dependencies:')
+    ? Object.assign({}, ...entryLines.splice(4).map(parseDependencyLine))
+    : undefined;
+
+  const peerBlockEnd =
+    peerFields && peerFields.findIndex(entry => entry.includes('peerDependenciesMeta:'));
+  const peerDependencies =
+    peerFields && peerFields[0]?.includes('peerDependencies:')
+      ? Object.assign(
+          {},
+          ...peerFields.splice(-(peerFields.length - peerBlockEnd)).map(parseDependencyLine)
+        )
+      : undefined;
+
+  const integrity = endFields[0].split('checksum: ')[1];
+  const resolution = entryLines[2].split('resolution: ')[1];
+
+  const entryObject = {
+    version: entryLines[1].split('version: ')[1],
+    resolved: resolution.includes('@workspace:') ? 'workspace' : resolution,
+    integrity,
+    language: endFields[1].split('languageName: ')[1],
+    link: endFields[2].split('linkType: ')[1],
+    dependencies,
+    peerDependencies
+  };
+
+  return Object.assign({}, ...keys.map(key => ({ [key.trim()]: entryObject })));
+};
+
+const parseDependencyLine = dependencyLine => {
+  const parts = dependencyLine.trim().split(' ');
+  if (parts.length === 2) {
+    return {
+      [parts[0]]: parts[1]
+    };
+  } else {
+    return {};
+  }
+};
+
 export const parseLock = content => {
   const lines = content.replaceAll('\r', '').replaceAll('"', '').split('\n');
 
-  if (!lines[1].includes('v1')) {
+  const metadata = detectYarnVersion(lines);
+
+  if (!metadata) {
+    warning('Unsupported Yarn lock version! Please report this issue in the action repository.');
     return {
       type: 'error',
       object: {}
     };
   }
 
-  const cleanedLines = lines.slice(4);
+  const cleanedLines = lines.slice(metadata.skipLines);
   const maxIndex = cleanedLines.length - 1;
 
   const entryChunks = [];
@@ -60,34 +167,9 @@ export const parseLock = content => {
   }, []);
 
   const result = entryChunks
-    .map(entryLines => {
-      const keys = entryLines[0].replaceAll(':', '').split(',');
-
-      const dependencies = entryLines[4]
-        ? Object.assign(
-            {},
-            ...entryLines.splice(5).map(dependencyLine => {
-              const parts = dependencyLine.trim().split(' ');
-              if (parts.length === 2) {
-                return {
-                  [parts[0]]: parts[1]
-                };
-              } else {
-                return {};
-              }
-            })
-          )
-        : undefined;
-
-      const entryObject = {
-        version: entryLines[1].split('version ')[1],
-        resolved: entryLines[2].split('resolved ')[1],
-        integrity: entryLines[3].split('integrity ')[1],
-        dependencies
-      };
-
-      return Object.assign({}, ...keys.map(key => ({ [key.trim()]: entryObject })));
-    })
+    .map(entryLines =>
+      metadata.version === 1 ? constructClassicEntry(entryLines) : constructBerryEntry(entryLines)
+    )
     .filter(Boolean);
 
   // Retain the official parser result structure for a while

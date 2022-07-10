@@ -4,8 +4,8 @@ const { getTestLockContent } = require('../testUtils');
 const { parseLock } = require('../../src/utils');
 
 test('naive performance test', () => {
-  const contentA = getTestLockContent('downgrade', 'a.lock');
-  const contentB = getTestLockContent('downgrade', 'b.lock');
+  const contentA = getTestLockContent('classic-downgrade', 'a.lock');
+  const contentB = getTestLockContent('classic-downgrade', 'b.lock');
 
   console.time('@yarnpkg/lockfile');
   const start = performance.now();
