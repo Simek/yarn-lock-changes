@@ -1,13 +1,22 @@
-name: Run Tests
+name: '🧪 Run Tests'
 on: [pull_request]
 
 jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
+    - name: '🚚 Checkout'
+      uses: actions/checkout@v3
+    - name: '🔧 Setup Node'
+      uses: actions/setup-node@v3
       with:
         node-version: '16'
-    - run: yarn
-    - run: yarn test
+    - name: '📦️ Install dependencies'
+      run: yarn
+    - name: '🧪 Run Unit tests'
+      run: yarn test
+    - name: '⚗️ Run CI tests'
+      uses: ./
+      with:
+        path: tests/ci/yarn.lock
+        token: ${{ secrets.GITHUB_TOKEN }}
