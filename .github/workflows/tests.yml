@@ -1,8 +1,14 @@
 name: '🧪 Run Tests'
-on: [pull_request]
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
 
 jobs:
-  check:
+  test:
     runs-on: ubuntu-latest
     steps:
     - name: '🚚 Checkout'
@@ -15,8 +21,18 @@ jobs:
       run: yarn
     - name: '🧪 Run Unit tests'
       run: yarn test
-    - name: '⚗️ Run CI tests'
+    - name: '⚗️ Run CI Classic test'
       uses: ./
       with:
-        path: tests/ci/yarn.lock
+        path: tests/ci/classic/yarn.lock
+        token: ${{ secrets.GITHUB_TOKEN }}
+    - name: '⚗️ Run CI Berry v2 test'
+      uses: ./
+      with:
+        path: tests/ci/berry-v2/yarn.lock
+        token: ${{ secrets.GITHUB_TOKEN }}
+    - name: '⚗️ Run CI Berry v3 test'
+      uses: ./
+      with:
+        path: tests/ci/berry-v3/yarn.lock
         token: ${{ secrets.GITHUB_TOKEN }}
