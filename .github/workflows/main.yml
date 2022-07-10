@@ -1,4 +1,4 @@
-name: Yarn Lock Changes
+name: '🔏 Yarn Lock Changes'
 on: [pull_request]
 
 jobs:
@@ -7,14 +7,9 @@ jobs:
     permissions:
       pull-requests: write
     steps:
-      - name: Checkout
+      - name: '🚚 Checkout'
         uses: actions/checkout@v3
-      - name: Yarn Lock Changes
+      - name: '🔏 Yarn Lock Changes'
         uses: ./
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-      - name: '[Test] Yarn Lock Changes Detached Package'
-        uses: ./
-        with:
-          path: tests/ci/yarn.lock
           token: ${{ secrets.GITHUB_TOKEN }}
