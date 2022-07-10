@@ -1,11 +1,10 @@
 const { debug, getBooleanInput, getInput, setFailed, warning } = require('@actions/core');
 const { context, getOctokit } = require('@actions/github');
-const lockfile = require('@yarnpkg/lockfile');
 const fs = require('fs');
 const { Base64 } = require('js-base64');
 const path = require('path');
 
-const { STATUS, countStatuses, diffLocks } = require('./utils');
+const { STATUS, countStatuses, diffLocks, parseLock } = require('./utils');
 const { createTable, createSummary } = require('./comment');
 
 const getCommentId = async (octokit, oktokitParams, issueNumber, commentHeader) => {
@@ -58,7 +57,7 @@ const run = async () => {
     }
 
     const content = fs.readFileSync(lockPath, { encoding: 'utf8' });
-    const updatedLock = lockfile.parse(content);
+    const updatedLock = parseLock(content);
 
     const oktokitParams = { owner, repo };
     debug('Oktokit params: ' + JSON.stringify(oktokitParams));
@@ -88,7 +87,7 @@ const run = async () => {
       throw Error('💥 Cannot fetch repository base lock file, aborting!');
     }
 
-    const baseLock = lockfile.parse(Base64.decode(baseLockData.data.content));
+    const baseLock = parseLock(Base64.decode(baseLockData.data.content));
     const lockChanges = diffLocks(baseLock, updatedLock);
     const lockChangesCount = Object.keys(lockChanges).length;
 
