@@ -1,24 +1,11 @@
-const lockfile = require('@yarnpkg/lockfile');
-const fs = require('fs');
-const path = require('path');
-
-const { diffLocks, STATUS, countStatuses } = require('../../src/utils');
-
-const getTestLockContent = (testName, filename) => {
-  const content = fs.readFileSync(
-    path.resolve(process.cwd(), './tests/unit/', testName, filename),
-    {
-      encoding: 'utf8'
-    }
-  );
-  return content;
-};
+const { diffLocks, STATUS, countStatuses, parseLock } = require('../../src/utils');
+const { getTestLockContent } = require('../testUtils');
 
 test('no downgrade detected', () => {
   const contentA = getTestLockContent('downgrade', 'a.lock');
   const contentB = getTestLockContent('downgrade', 'b.lock');
 
-  const result = diffLocks(lockfile.parse(contentA), lockfile.parse(contentB));
+  const result = diffLocks(parseLock(contentA), parseLock(contentB));
 
   expect(Object.keys(result).length).toBe(52);
 
@@ -32,7 +19,7 @@ test('no downgrade detected, multiple cases', () => {
   const contentA = getTestLockContent('downgrade-complex', 'a.lock');
   const contentB = getTestLockContent('downgrade-complex', 'b.lock');
 
-  const result = diffLocks(lockfile.parse(contentA), lockfile.parse(contentB));
+  const result = diffLocks(parseLock(contentA), parseLock(contentB));
 
   expect(Object.keys(result).length).toBe(389);
 

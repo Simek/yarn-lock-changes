@@ -36,6 +36,67 @@ const formatLockEntry = obj =>
       })
   );
 
+export const parseLock = content => {
+  const lines = content.replaceAll('\r', '').replaceAll('"', '').split('\n');
+
+  if (!lines[1].includes('v1')) {
+    return {
+      type: 'error',
+      object: {}
+    };
+  }
+
+  const cleanedLines = lines.slice(4);
+  const maxIndex = cleanedLines.length - 1;
+
+  const entryChunks = [];
+  cleanedLines.reduce((previousValue, currentValue, currentIndex) => {
+    if (currentValue !== '' && currentIndex !== maxIndex) {
+      return [...previousValue, currentValue];
+    } else {
+      entryChunks.push([...previousValue, currentValue]);
+      return [];
+    }
+  }, []);
+
+  const result = entryChunks
+    .map(entryLines => {
+      const keys = entryLines[0].replaceAll(':', '').split(',');
+
+      const dependencies = entryLines[4]
+        ? Object.assign(
+            {},
+            ...entryLines.splice(5).map(dependencyLine => {
+              const parts = dependencyLine.trim().split(' ');
+              if (parts.length === 2) {
+                return {
+                  [parts[0]]: parts[1]
+                };
+              } else {
+                return {};
+              }
+            })
+          )
+        : undefined;
+
+      const entryObject = {
+        version: entryLines[1].split('version ')[1],
+        resolved: entryLines[2].split('resolved ')[1],
+        integrity: entryLines[3].split('integrity ')[1],
+        dependencies
+      };
+
+      return Object.assign({}, ...keys.map(key => ({ [key.trim()]: entryObject })));
+    })
+    .filter(Boolean);
+
+  // Retain the official parser result structure for a while
+  return {
+    type: 'success',
+    object: Object.assign({}, ...result)
+  };
+};
+
 export const diffLocks = (previous, current) => {
   const changes = {};
   const previousPackages = formatLockEntry(previous);
