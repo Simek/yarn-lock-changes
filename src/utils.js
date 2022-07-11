@@ -94,7 +94,10 @@ const constructBerryEntry = entryLines => {
     .replaceAll(':', '')
     .split(',');
 
-  const endFields = entryLines.splice(-4);
+  const version = entryLines[1].split('version: ')[1];
+  const isLocal = version.includes('use.local');
+
+  const endFields = entryLines.splice(isLocal ? -3 : -4);
   const peerBlockStart = entryLines.findIndex(entry => entry.includes('peerDependencies:'));
   const peerFields =
     peerBlockStart !== -1 ? entryLines.splice(-(entryLines.length - peerBlockStart)) : undefined;
@@ -113,15 +116,15 @@ const constructBerryEntry = entryLines => {
         )
       : undefined;
 
-  const integrity = endFields[0].split('checksum: ')[1];
+  const integrity = !isLocal && endFields[0].split('checksum: ')[1];
   const resolution = entryLines[2].split('resolution: ')[1];
 
   const entryObject = {
-    version: entryLines[1].split('version: ')[1],
+    version,
     resolved: resolution.includes('@workspace:') ? 'workspace' : resolution,
     integrity,
-    language: endFields[1].split('languageName: ')[1],
-    link: endFields[2].split('linkType: ')[1],
+    language: endFields[isLocal ? 0 : 1].split('languageName: ')[1],
+    link: endFields[isLocal ? 1 : 2].split('linkType: ')[1],
     dependencies,
     peerDependencies
   };
@@ -167,6 +170,7 @@ export const parseLock = content => {
   }, []);
 
   const result = entryChunks
+    .filter(entryLines => entryLines.length >= 4)
     .map(entryLines =>
       metadata.version === 1 ? constructClassicEntry(entryLines) : constructBerryEntry(entryLines)
     )
