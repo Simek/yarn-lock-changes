@@ -77,6 +77,35 @@ jobs:
       ...
 ```
 
+### The action fails in a private repository
+
+After one of the GitHub Actions security breaches GitHub decided to trim down the default permission set for actions running in private repositories. 
+
+If you are trying to run action with default setup in the private repository, you will see the following error during `checkout` step:
+
+```sh
+remote: Repository not found.
+Error: fatal: repository 'https://github.com/<your_user>/<your_repo>/' not found
+Error: The process '/usr/bin/git' failed with exit code 128
+```
+
+This means that you will need to add the following `permissions` entry to the job which runs `checkout`:
+
+```yml
+jobs:
+  ...:
+    runs-on: ...
+    #####
+    permissions:
+      contents: read
+    #####
+    steps:
+      ...
+```
+
+If you would like to learn a little bit more about this problem, you can visit this issue in the GitHub Checkout Action repository: 
+* https://github.com/actions/checkout/issues/254
+
 ## 🔍️ Debugging
 
 To run action in the debug mode you need to add the `ACTIONS_STEP_DEBUG` repository secret and set it to `true`, as stated in the [GitHub documentation](https://docs.github.com/en/actions/managing-workflow-runs/enabling-debug-logging#enabling-step-debug-logging).
