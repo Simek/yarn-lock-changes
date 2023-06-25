@@ -16,7 +16,7 @@
     "@actions/github": "^5.1.1",
     "js-base64": "^3.7.4",
     "markdown-table": "^3.0.3",
-    "semver": "^7.3.8"
+    "semver": "^7.5.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.12",
