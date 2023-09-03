@@ -33,6 +33,7 @@ jobs:
           failOnDowngrade: false
           path: yarn.lock
           updateComment: true
+          groupByType: false
 ```
 
 ### 🔌 Inputs
