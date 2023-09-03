@@ -37,13 +37,14 @@ jobs:
 
 ### 🔌 Inputs
 
-| Input | Required | Default | Description |
-| --- | :---: | :---: | --- |
-| `collapsibleThreshold` | No | `25` | Number of lock changes, which will result in collapsed comment content and an addition of changes summary table. |
-| `failOnDowngrade` | No | `false` | When a dependency downgrade is detected, fail the action. __Comment will still be posted.__ |
-| `path` | No | `yarn.lock` | Path to the `yarn.lock` file in the repository. Default value points to the file at project root. |
-| `token` | <ins>**Yes**</ins> | – | Repository `GITHUB_TOKEN` which allows action to make calls to the GitHub API (Octokit). |
-| `updateComment` | No | `true` | Update the comment on each new commit. If value is set to `false`, bot will post a new comment on each change. |
+| Input                  |      Required      |   Default   | Description                                                                                                       |
+|------------------------|:------------------:|:-----------:|-------------------------------------------------------------------------------------------------------------------|
+| `collapsibleThreshold` |         No         |    `25`     | Number of lock changes, which will result in collapsed comment content, and an addition of changes summary table. |
+| `failOnDowngrade`      |         No         |   `false`   | WFail the action when a dependency downgrade is detected. __Comment will still be posted.__                       |
+| `path`                 |         No         | `yarn.lock` | Path to the `yarn.lock` file in the repository. Default value points to the file at project root.                 |
+| `token`                | <ins>**Yes**</ins> |      –      | Repository `GITHUB_TOKEN` which allows action to make calls to the GitHub API (Octokit).                          |
+| `updateComment`        |         No         |   `true`    | Update the comment on each new commit. If value is set to `false`, bot will post a new comment on each change.    |
+| `groupByType`          |         No         |   `false`   | Group the dependencies in the comment table by the change type.                                                   |
 
 ## 📸 Preview
 

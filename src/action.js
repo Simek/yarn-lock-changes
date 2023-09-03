@@ -34,6 +34,7 @@ const run = async () => {
     const inputPath = getInput('path');
     const updateComment = getBooleanInput('updateComment');
     const failOnDowngrade = getBooleanInput('failOnDowngrade');
+    const groupByType = getBooleanInput('groupByType');
     const collapsibleThreshold = Math.max(parseInt(getInput('collapsibleThreshold'), 10), 0);
 
     const { owner, repo, number } = context.issue;
@@ -98,10 +99,10 @@ const run = async () => {
     debug('Bot comment ID: ' + commentId);
 
     if (lockChangesCount) {
-      let diffsTable = createTable(lockChanges);
+      let diffsTable = createTable(lockChanges, groupByType);
 
       if (diffsTable.length >= 64000) {
-        diffsTable = createTable(lockChanges, true);
+        diffsTable = createTable(lockChanges, groupByType, true);
       }
 
       const collapsed = lockChangesCount >= collapsibleThreshold;
