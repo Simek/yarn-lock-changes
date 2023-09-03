@@ -5,11 +5,11 @@ branding:
   color: 'yellow'
 inputs:
   collapsibleThreshold:
-    description: 'Number of lock changes, which will result in collapsed comment content an addition of summary table.'
+    description: 'Number of lock changes, which will result in collapsed comment content, and an addition of changes summary table.'
     required: false
     default: '25'
   failOnDowngrade:
-    description: 'When a dependency downgrade is detected, fail the action.'
+    description: 'Fail the action when a dependency downgrade is detected. Comment will still be posted.'
     required: false
     default: 'false'
   path:
@@ -23,6 +23,10 @@ inputs:
     description: 'Update the comment on each new commit. If value is set to "false", bot will post a new one on each change.'
     required: false
     default: 'true'
+  groupByType:
+    description: 'Group the dependencies in the comment table by the change type.'
+    required: false
+    default: 'false'
 runs:
   using: 'node16'
   main: 'dist/index.js'

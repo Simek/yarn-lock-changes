@@ -6,10 +6,12 @@ const semverValid = require('semver/functions/valid');
 
 export const STATUS = {
   ADDED: 'ADDED',
+  UPDATED: 'UPDATED',
   DOWNGRADED: 'DOWNGRADED',
-  REMOVED: 'REMOVED',
-  UPDATED: 'UPDATED'
+  REMOVED: 'REMOVED'
 };
+
+export const STATUS_ORDER = [STATUS.ADDED, STATUS.UPDATED, STATUS.DOWNGRADED, STATUS.REMOVED];
 
 export const countStatuses = (lockChanges, statusToCount) =>
   Object.values(lockChanges).filter(({ status }) => status === statusToCount).length;
