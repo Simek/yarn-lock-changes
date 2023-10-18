@@ -78,10 +78,14 @@ const constructClassicEntry = entryLines => {
       )
     : undefined;
 
+  const version = entryLines.find(line => line.includes('version ')).split('version ')[1];
+  const resolved = entryLines.find(line => line.includes('resolved ')).split('resolved ')[1];
+  const integrity = entryLines.find(line => line.includes('integrity ')).split('integrity ')[1];
+
   const entryObject = {
-    version: entryLines[1].split('version ')[1],
-    resolved: entryLines[2].split('resolved ')[1],
-    integrity: entryLines[3].split('integrity ')[1],
+    version,
+    resolved,
+    integrity,
     dependencies
   };
 
