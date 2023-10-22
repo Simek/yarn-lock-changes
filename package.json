@@ -1,6 +1,6 @@
 {
   "name": "yarn-lock-changes",
-  "version": "0.11.2",
+  "version": "0.11.3",
   "main": "dist/index.js",
   "repository": "github:Simek/yarn-lock-changes",
   "author": "Simek <me@simek.dev>",
