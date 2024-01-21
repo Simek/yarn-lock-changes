@@ -7,7 +7,6 @@
   "plugins": ["jest", "prettier"],
   "extends": [
     "eslint:recommended",
-    "plugin:jest/recommended",
     "plugin:prettier/recommended"
   ],
   "parserOptions": {

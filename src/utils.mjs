@@ -1,8 +1,8 @@
-const { warning } = require('@actions/core');
+import { warning } from '@actions/core';
 
-const semverCompare = require('semver/functions/compare');
-const semverCoerce = require('semver/functions/coerce');
-const semverValid = require('semver/functions/valid');
+import semverCompare from 'semver/functions/compare.js';
+import semverCoerce from 'semver/functions/coerce.js';
+import semverValid from 'semver/functions/valid.js';
 
 export const STATUS = {
   ADDED: 'ADDED',

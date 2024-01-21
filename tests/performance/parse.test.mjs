@@ -1,7 +1,9 @@
-const lockfile = require('@yarnpkg/lockfile');
+import lockfile from '@yarnpkg/lockfile';
+import { test } from 'uvu';
+import { is } from 'uvu/assert';
 
-const { getTestLockContent } = require('../testUtils');
-const { parseLock } = require('../../src/utils');
+import { getTestLockContent } from '../testUtils.mjs';
+import { parseLock }from '../../src/utils.mjs';
 
 test('naive performance test', () => {
   const contentA = getTestLockContent('classic-downgrade', 'a.lock');
@@ -25,5 +27,7 @@ test('naive performance test', () => {
   const internalEnd = performance.now();
   console.timeEnd('Internal parser');
 
-  expect(end - start).toBeGreaterThan(internalEnd - internalStart);
+  is((end - start) > (internalEnd - internalStart), true);
 });
+
+test.run();
