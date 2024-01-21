@@ -22,7 +22,7 @@ jobs:
       pull-requests: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Yarn Lock Changes
         # Please use `main` as version before the stable release will be published as `v1`.
         uses: Simek/yarn-lock-changes@main
@@ -35,6 +35,13 @@ jobs:
           updateComment: true
           groupByType: false
 ```
+
+> [!note]
+> For Node 16 support, you can use the `v0.11` version tag in your workflow, instead of pointing to `main`:
+> ```yml
+> - name: Yarn Lock Changes
+>   uses: Simek/yarn-lock-changes@v0.11
+> ```
 
 ### 🔌 Inputs
 

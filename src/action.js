@@ -1,11 +1,11 @@
-const { debug, getBooleanInput, getInput, setFailed, warning } = require('@actions/core');
-const { context, getOctokit } = require('@actions/github');
-const fs = require('fs');
-const { Base64 } = require('js-base64');
-const path = require('path');
+import { debug, getBooleanInput, getInput, setFailed, warning } from '@actions/core';
+import { context, getOctokit } from '@actions/github';
+import { Base64 } from 'js-base64';
+import fs from 'node:fs';
+import path from 'node:path';
 
-const { STATUS, countStatuses, diffLocks, parseLock } = require('./utils');
-const { createTable, createSummary } = require('./comment');
+import { createTable, createSummary } from './comment.mjs';
+import { STATUS, countStatuses, diffLocks, parseLock } from './utils.mjs';
 
 const getCommentId = async (octokit, oktokitParams, issueNumber, commentHeader) => {
   const currentComments = await octokit.rest.issues.listComments({

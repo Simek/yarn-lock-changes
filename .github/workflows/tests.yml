@@ -6,13 +6,13 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node: [16, 18, 20]
+        node: [18, 20, 21]
     name: Testing on Node ${{ matrix.node }}
     steps:
     - name: '🚚 Checkout'
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: '🔧 Setup Node'
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node }}
     - name: '📦️ Install dependencies'
