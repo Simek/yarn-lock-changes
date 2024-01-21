@@ -36,6 +36,13 @@ jobs:
           groupByType: false
 ```
 
+> [!note]
+> For Node 16 support, you can use the `v0.11` version tag in your workflow, instead of pointing to `main`:
+> ```yml
+> - name: Yarn Lock Changes
+>   uses: Simek/yarn-lock-changes@v0.11
+> ```
+
 ### 🔌 Inputs
 
 | Input                  |      Required      |   Default   | Description                                                                                                       |
