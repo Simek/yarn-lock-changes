@@ -1,9 +1,9 @@
 {
-  "name": "yarn-lock-changes",
+  "name": "npm-lock-changes",
   "version": "0.12.0",
   "main": "dist/index.js",
-  "repository": "github:Simek/yarn-lock-changes",
-  "author": "Simek <me@simek.dev>",
+  "repository": "github:bissolli/npm-lock-changes",
+  "author": "Gustavo Bissolli <gustavo.bissolli@gmail.com>",
   "license": "MIT",
   "scripts": {
     "build": "ncc build ./src/action.js -m --target es2021",
@@ -16,7 +16,8 @@
     "@actions/github": "^6.0.0",
     "js-base64": "^3.7.6",
     "markdown-table": "^3.0.3",
-    "semver": "^7.5.4"
+    "semver": "^7.5.4",
+    "snyk-nodejs-lockfile-parser": "^1.53.3"
   },
   "devDependencies": {
     "@vercel/ncc": "^0.38.1",

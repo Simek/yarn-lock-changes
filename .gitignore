@@ -1,4 +1,1 @@
-.idea
-.yarn
 node_modules
-tests/ci/**/.yarnrc.yml

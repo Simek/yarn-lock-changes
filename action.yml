@@ -1,5 +1,5 @@
-name: 'Yarn Lock Changes'
-description: 'Creates a comment inside Pull Request with the human-readable summary of the changes to the "yarn.lock" file.'
+name: 'NPM Lock Changes'
+description: 'Creates a comment inside Pull Request with the human-readable summary of the changes to the "package-lock.json" file.'
 branding:
   icon: 'copy'
   color: 'yellow'
@@ -13,9 +13,9 @@ inputs:
     required: false
     default: 'false'
   path:
-    description: 'Path to the "yarn.lock" file in the repository. Default value points to the file at project root.'
+    description: 'Path to the "package-lock.json" file in the repository. Default value points to the file at project root.'
     required: false
-    default: 'yarn.lock'
+    default: 'package-lock.json'
   token:
     description: 'GitHub token for the bot, so it can publish a comment in the pull request.'
     required: true

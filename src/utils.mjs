@@ -40,7 +40,7 @@ const formatLockEntry = obj =>
       })
   );
 
-const detectYarnVersion = lines => {
+const detectNPMVersion = lines => {
   if (lines[1].includes('v1')) {
     return {
       version: 1,
@@ -155,10 +155,10 @@ const parseDependencyLine = dependencyLine => {
 export const parseLock = content => {
   const lines = content.replaceAll('\r', '').replaceAll('"', '').split('\n');
 
-  const metadata = detectYarnVersion(lines);
+  const metadata = detectNPMVersion(lines);
 
   if (!metadata) {
-    warning('Unsupported Yarn lock version! Please report this issue in the action repository.');
+    warning('Unsupported Package lock version! Please report this issue in the action repository.');
     return {
       type: 'error',
       object: {}

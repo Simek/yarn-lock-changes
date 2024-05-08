@@ -16,21 +16,21 @@ jobs:
       with:
         node-version: ${{ matrix.node }}
     - name: '📦️ Install dependencies'
-      run: yarn
+      run: npm install
     - name: '🧪 Run Unit tests'
-      run: yarn test
+      run: npm run test
     - name: '⚗️ Run CI Classic test'
       uses: ./
       with:
-        path: tests/ci/classic/yarn.lock
+        path: tests/ci/classic/package-lock.json
         token: ${{ secrets.GITHUB_TOKEN }}
     - name: '⚗️ Run CI Berry v2 test'
       uses: ./
       with:
-        path: tests/ci/berry-v2/yarn.lock
+        path: tests/ci/berry-v2/package-lock.json
         token: ${{ secrets.GITHUB_TOKEN }}
     - name: '⚗️ Run CI Berry v3 test'
       uses: ./
       with:
-        path: tests/ci/berry-v3/yarn.lock
+        path: tests/ci/berry-v3/package-lock.json
         token: ${{ secrets.GITHUB_TOKEN }}

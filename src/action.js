@@ -3,7 +3,9 @@ import { context, getOctokit } from '@actions/github';
 import { Base64 } from 'js-base64';
 import fs from 'node:fs';
 import path from 'node:path';
-
+// const PackageLockParser =
+//   require('snyk-nodejs-lockfile-parser/dist/parsers/package-lock-parser').PackageLockParser;
+// import {} from "snyk-nodejs-lockfile-parser"
 import { createTable, createSummary } from './comment.mjs';
 import { STATUS, countStatuses, diffLocks, parseLock } from './utils.mjs';
 
@@ -76,7 +78,7 @@ const run = async () => {
       throw Error('💥 Cannot fetch repository base branch tree, aborting!');
     }
 
-    const baseLockSHA = baseTree.data.tree.filter(file => file.path === 'yarn.lock')[0].sha;
+    const baseLockSHA = baseTree.data.tree.filter(file => file.path === 'package-lock.json')[0].sha;
     debug('Base lockfile SHA: ' + baseLockSHA);
 
     const baseLockData = await octokit.request('GET /repos/{owner}/{repo}/git/blobs/{file_sha}', {
