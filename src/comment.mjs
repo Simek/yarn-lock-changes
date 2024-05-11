@@ -1,4 +1,4 @@
-import { markdownTable }from 'markdown-table';
+import { markdownTable } from 'markdown-table';
 
 import { STATUS_ORDER, countStatuses } from './utils.mjs';
 

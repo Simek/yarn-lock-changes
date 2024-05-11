@@ -1,8 +1,8 @@
 import { debug, getBooleanInput, getInput, setFailed, warning } from '@actions/core';
 import { context, getOctokit } from '@actions/github';
 import { Base64 } from 'js-base64';
-import fs from 'node:fs';
-import path from 'node:path';
+import { existsSync, readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 
 import { createTable, createSummary } from './comment.mjs';
 import { STATUS, countStatuses, diffLocks, parseLock } from './utils.mjs';
@@ -49,15 +49,15 @@ const run = async () => {
     const baseBranch = ref || default_branch;
     debug('Base branch: ' + baseBranch);
 
-    const lockPath = path.resolve(process.cwd(), inputPath);
+    const lockPath = resolve(process.cwd(), inputPath);
 
-    if (!fs.existsSync(lockPath)) {
+    if (!existsSync(lockPath)) {
       throw Error(
         '💥 The code has not been checkout or the lock file does not exist in this PR, aborting!'
       );
     }
 
-    const content = fs.readFileSync(lockPath, { encoding: 'utf8' });
+    const content = readFileSync(lockPath, { encoding: 'utf8' });
     const updatedLock = parseLock(content);
 
     const oktokitParams = { owner, repo };

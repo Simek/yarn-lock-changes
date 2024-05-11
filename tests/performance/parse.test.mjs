@@ -3,7 +3,7 @@ import { test } from 'uvu';
 import { is } from 'uvu/assert';
 
 import { getTestLockContent } from '../testUtils.mjs';
-import { parseLock }from '../../src/utils.mjs';
+import { parseLock } from '../../src/utils.mjs';
 
 test('naive performance test', () => {
   const contentA = getTestLockContent('classic-downgrade', 'a.lock');
@@ -27,7 +27,7 @@ test('naive performance test', () => {
   const internalEnd = performance.now();
   console.timeEnd('Internal parser');
 
-  is((end - start) > (internalEnd - internalStart), true);
+  is(end - start > internalEnd - internalStart, true);
 });
 
 test.run();
