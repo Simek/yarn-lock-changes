@@ -4,10 +4,11 @@
     "es2021": true,
     "node": true
   },
-  "plugins": ["jest", "prettier"],
+  "plugins": ["prettier"],
   "extends": [
     "eslint:recommended",
-    "plugin:prettier/recommended"
+    "plugin:prettier/recommended",
+    "plugin:n/recommended"
   ],
   "parserOptions": {
     "ecmaVersion": "latest",
@@ -18,7 +19,8 @@
     "prefer-arrow-callback": "error",
     "prefer-const": "error",
     "quotes": ["error", "single"],
-    "semi": ["error", "always"]
+    "semi": ["error", "always"],
+    "n/no-unpublished-import": "off"
   },
   "ignorePatterns": ["dist", "node_modules"]
 }
