@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node: [18, 20, 21]
+        node: [18, 20, 22]
     name: Testing on Node ${{ matrix.node }}
     steps:
     - name: '🚚 Checkout'
