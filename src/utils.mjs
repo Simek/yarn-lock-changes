@@ -167,6 +167,7 @@ export const parseLock = content => {
 
   const cleanedLines = lines.slice(metadata.skipLines);
   const maxIndex = cleanedLines.length - 1;
+  const entryConstructor = metadata.version === 1 ? constructClassicEntry : constructBerryEntry;
 
   const entryChunks = [];
   cleanedLines.reduce((previousValue, currentValue, currentIndex) => {
@@ -180,9 +181,7 @@ export const parseLock = content => {
 
   const result = entryChunks
     .filter(entryLines => entryLines.length >= 4)
-    .map(entryLines =>
-      metadata.version === 1 ? constructClassicEntry(entryLines) : constructBerryEntry(entryLines)
-    )
+    .map(entryConstructor)
     .filter(Boolean);
 
   // Retain the official parser result structure for a while
