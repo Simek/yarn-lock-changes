@@ -165,29 +165,29 @@ export const parseLock = content => {
     };
   }
 
-  const cleanedLines = lines.slice(metadata.skipLines);
-  const maxIndex = cleanedLines.length - 1;
+  lines.splice(0, metadata.skipLines);
+
   const entryConstructor = metadata.version === 1 ? constructClassicEntry : constructBerryEntry;
+  const maxIndex = lines.length - 1;
 
   const entryChunks = [];
-  cleanedLines.reduce((previousValue, currentValue, currentIndex) => {
-    if (currentValue !== '' && currentIndex !== maxIndex) {
-      return [...previousValue, currentValue];
-    } else {
-      entryChunks.push([...previousValue, currentValue]);
-      return [];
-    }
-  }, []);
+  let currentChunk = [];
 
-  const result = entryChunks
-    .filter(entryLines => entryLines.length >= 4)
-    .map(entryConstructor)
-    .filter(Boolean);
+  lines.forEach((line, idx) => {
+    currentChunk.push(line);
+
+    if (line === '' || idx === maxIndex) {
+      if (currentChunk.length >= 4) {
+        entryChunks.push(currentChunk);
+      }
+      currentChunk = [];
+    }
+  });
 
   // Retain the official parser result structure for a while
   return {
     type: 'success',
-    object: Object.assign({}, ...result)
+    object: Object.assign({}, ...entryChunks.map(entryConstructor))
   };
 };
 
