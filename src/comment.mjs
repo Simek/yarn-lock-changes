@@ -17,7 +17,7 @@ const ASSETS_WIDTH = {
 };
 
 const getStatusLabel = status =>
-  `[<img alt="${status}" src="${ASSETS_URL[status]}" height="16" width="${ASSETS_WIDTH[status]}" />](#)`;
+  `[<sub><img alt="${status}" src="${ASSETS_URL[status]}" height="16" width="${ASSETS_WIDTH[status]}" /></sub>](#)`;
 
 export const createTable = (lockChanges, groupByType = false, plainStatuses = false) =>
   markdownTable(
