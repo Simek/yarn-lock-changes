@@ -9,8 +9,15 @@ const ASSETS_URL = {
   UPDATED: 'https://git.io/J38dY'
 };
 
+const ASSETS_WIDTH = {
+  ADDED: 53,
+  DOWNGRADED: 89,
+  REMOVED: 66,
+  UPDATED: 60
+};
+
 const getStatusLabel = status =>
-  `[<sub><img alt="${status}" src="${ASSETS_URL[status]}" height="16" /></sub>](#)`;
+  `[<sub><img alt="${status}" src="${ASSETS_URL[status]}" height="16 width="${ASSETS_WIDTH[status]}" /></sub>](#)`;
 
 export const createTable = (lockChanges, groupByType = false, plainStatuses = false) =>
   markdownTable(
