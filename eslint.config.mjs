@@ -5,7 +5,7 @@ import node from 'eslint-plugin-n';
 
 export default [
   {
-    ignores: ['**/dist', '**/node_modules']
+    ignores: ['**/.yarn', '**/dist', '**/node_modules']
   },
   js.configs.recommended,
   prettierRecommended,
