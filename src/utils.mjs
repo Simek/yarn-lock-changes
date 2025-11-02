@@ -95,9 +95,7 @@ const findLockLineValue = (lines, keyString) => {
 
 const constructBerryEntry = entryLines => {
   const keys = entryLines[0]
-    .replaceAll('@npm:', '@')
-    .replaceAll('@yarn:', '@')
-    .replaceAll('@workspace:', '@')
+    .replace(/@(npm|yarn|workspace):/g, '@')
     .replaceAll(':', '')
     .split(',');
 
@@ -153,7 +151,7 @@ const parseDependencyLine = dependencyLine => {
 };
 
 export const parseLock = content => {
-  const lines = content.replaceAll('\r', '').replaceAll('"', '').split('\n');
+  const lines = content.replace(/[\r"]/g, '').split('\n');;
 
   const metadata = detectYarnVersion(lines);
 
