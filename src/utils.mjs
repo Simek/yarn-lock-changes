@@ -151,7 +151,7 @@ const parseDependencyLine = dependencyLine => {
 };
 
 export const parseLock = content => {
-  const lines = content.replace(/[\r"]/g, '').split('\n');;
+  const lines = content.replace(/[\r"]/g, '').split('\n');
 
   const metadata = detectYarnVersion(lines);
 
