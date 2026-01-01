@@ -6,7 +6,7 @@
   "author": "Simek <me@simek.dev>",
   "license": "MIT",
   "scripts": {
-    "build": "ncc build ./src/action.js -m --target es2021",
+    "build": "esbuild src/action.js --bundle --platform=node --target=node18 --minify --legal-comments=none --outfile=dist/index.js",
     "lint": "eslint .",
     "optimize": "svgo -f ./assets",
     "test": "uvu tests -i .cjs -i testUtils"
@@ -20,14 +20,14 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
-    "@vercel/ncc": "^0.38.4",
     "@yarnpkg/lockfile": "^1.1.0",
     "@yarnpkg/parsers": "^3.0.3",
+    "esbuild": "^0.27.2",
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-n": "^17.23.1",
     "eslint-plugin-prettier": "^5.5.4",
-    "globals": "^16.5.0",
+    "globals": "^17.0.0",
     "prettier": "^3.7.4",
     "svgo": "^4.0.0",
     "uvu": "^0.5.6"
