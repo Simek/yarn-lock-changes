@@ -2,13 +2,13 @@
 # Manual changes might be lost - proceed with caution!
 
 __metadata:
-  version: 4
-  cacheKey: 7
+  version: 8
+  cacheKey: 10
 
 "lodash@npm:^4.17.23":
   version: 4.17.23
   resolution: "lodash@npm:4.17.23"
-  checksum: 4f617568d9a177e64da80135481a408d2a5a8e2b45a4d5c020bdcdedeb662664b4990e1cef8f08d13d3da042c63fc2c7b80fb2953fd30845d5d5337d7089dea2
+  checksum: 10/82504c88250f58da7a5a4289f57a4f759c44946c005dd232821c7688b5fcfbf4a6268f6a6cdde4b792c91edd2f3b5398c1d2a0998274432cff76def48735e233
   languageName: node
   linkType: hard
 
@@ -16,6 +16,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "root-workspace-0b6124@workspace:."
   dependencies:
-    lodash: ^4.17.23
+    lodash: "npm:^4.17.23"
   languageName: unknown
   linkType: soft

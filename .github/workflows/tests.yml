@@ -34,3 +34,8 @@ jobs:
       with:
         path: tests/ci/berry-v3/yarn.lock
         token: ${{ secrets.GITHUB_TOKEN }}
+    - name: '⚗️ Run CI Berry v4 test'
+      uses: ./
+      with:
+        path: tests/ci/berry-v4/yarn.lock
+        token: ${{ secrets.GITHUB_TOKEN }}
