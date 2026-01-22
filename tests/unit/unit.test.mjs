@@ -60,4 +60,18 @@ test('Yarn Berry (v3) - detect changes', () => {
   is(countStatuses(result, STATUS.REMOVED), 1);
 });
 
+test('Yarn Berry (v4) - detect changes', () => {
+  const contentA = getTestLockContent('berry-v4', 'a.lock');
+  const contentB = getTestLockContent('berry-v4', 'b.lock');
+
+  const result = diffLocks(parseLock(contentA), parseLock(contentB));
+
+  is(Object.keys(result).length, 51);
+
+  is(countStatuses(result, STATUS.ADDED), 1);
+  is(countStatuses(result, STATUS.UPDATED), 32);
+  is(countStatuses(result, STATUS.DOWNGRADED), 0);
+  is(countStatuses(result, STATUS.REMOVED), 18);
+});
+
 test.run();
