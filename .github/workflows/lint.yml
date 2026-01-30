@@ -4,7 +4,7 @@ on: [pull_request]
 jobs:
   test:
     runs-on: ubuntu-latest
-    name: Lint code
+    name: Lint and format checks
     steps:
       - name: '🚚 Checkout'
         uses: actions/checkout@v6
