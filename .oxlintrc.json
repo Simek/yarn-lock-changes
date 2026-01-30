@@ -58,7 +58,6 @@
     "unicorn/prefer-node-protocol": "error",
     "unicorn/prefer-number-properties": "error",
     "unicorn/prefer-regexp-test": "error",
-    "unicorn/prefer-string-slice": "error",
     "unicorn/require-number-to-fixed-digits-argument": "error"
   }
 }

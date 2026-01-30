@@ -24,7 +24,7 @@ async function getCommentId(octokit, oktokitParams, issueNumber, commentHeader) 
 }
 
 function getBasePathFromInput(input) {
-  return input.lastIndexOf('/') ? input.slice(0, input.lastIndexOf('/')) : '';
+  return input.lastIndexOf('/') ? input.substring(0, input.lastIndexOf('/')) : '';
 }
 
 async function run() {
