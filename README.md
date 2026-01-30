@@ -22,7 +22,7 @@ jobs:
       pull-requests: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Yarn Lock Changes
         # Please use `main` as version before the stable release will be published as `v1`.
         uses: Simek/yarn-lock-changes@main
