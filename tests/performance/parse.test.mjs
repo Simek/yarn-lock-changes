@@ -3,8 +3,8 @@ import { parseSyml } from '@yarnpkg/parsers';
 import { test } from 'uvu';
 import { is } from 'uvu/assert';
 
-import { getTestLockContent } from '../testUtils.mjs';
 import { parseLock } from '../../src/utils.mjs';
+import { getTestLockContent } from '../testUtils.mjs';
 
 test('Classic - parser performance test (x100)', () => {
   const contentA = getTestLockContent('classic-downgrade', 'a.lock');

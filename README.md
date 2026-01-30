@@ -38,12 +38,14 @@ jobs:
 
 > [!note]
 > For Node <22 support, you can change the action version tag in your workflow to `v0.12`:
+>
 > ```yml
 > - name: Yarn Lock Changes
 >   uses: Simek/yarn-lock-changes@v0.12
 > ```
 >
 > For Node <18 support, you can change the action version tag in your workflow to `v0.11`:
+>
 > ```yml
 > - name: Yarn Lock Changes
 >   uses: Simek/yarn-lock-changes@v0.11
@@ -52,10 +54,10 @@ jobs:
 ### 🔌 Inputs
 
 | Input                  |      Required      |   Default   | Description                                                                                                       |
-|------------------------|:------------------:|:-----------:|-------------------------------------------------------------------------------------------------------------------|
+| ---------------------- | :----------------: | :---------: | ----------------------------------------------------------------------------------------------------------------- |
 | `token`                | <ins>**Yes**</ins> |      –      | Repository `GITHUB_TOKEN` which allows action to make calls to the GitHub API (Octokit).                          |
 | `collapsibleThreshold` |         No         |    `25`     | Number of lock changes, which will result in collapsed comment content, and an addition of changes summary table. |
-| `failOnDowngrade`      |         No         |   `false`   | WFail the action when a dependency downgrade is detected. __Comment will still be posted.__                       |
+| `failOnDowngrade`      |         No         |   `false`   | WFail the action when a dependency downgrade is detected. **Comment will still be posted.**                       |
 | `path`                 |         No         | `yarn.lock` | Path to the `yarn.lock` file in the repository. Default value points to the file at project root.                 |
 | `updateComment`        |         No         |   `true`    | Update the comment on each new commit. If value is set to `false`, bot will post a new comment on each change.    |
 | `groupByType`          |         No         |   `false`   | Group the dependencies in the comment table by the change type.                                                   |
@@ -74,9 +76,9 @@ jobs:
 
 ### The action fails on the Dependabot pull requests
 
-Due to the security reasons from March 1st, 2021 workflow runs that are triggered by Dependabot have permissions reduced by default: 
+Due to the security reasons from March 1st, 2021 workflow runs that are triggered by Dependabot have permissions reduced by default:
 
-* [GitHub Actions: Workflows triggered by Dependabot PRs will run with read-only permissions](https://github.blog/changelog/2021-02-19-github-actions-workflows-triggered-by-dependabot-prs-will-run-with-read-only-permissions/)
+- [GitHub Actions: Workflows triggered by Dependabot PRs will run with read-only permissions](https://github.blog/changelog/2021-02-19-github-actions-workflows-triggered-by-dependabot-prs-will-run-with-read-only-permissions/)
 
 To ensure that sufficient permissions for this action are always granted, you will need to add `permissions` entry to the job which runs `yarn-lock-changes`:
 
@@ -88,13 +90,12 @@ jobs:
     permissions:
       pull-requests: write
     #####
-    steps:
-      ...
+    steps: ...
 ```
 
 ### The action fails in a private repository
 
-After one of the GitHub Actions security breaches GitHub decided to trim down the default permission set for actions running in private repositories. 
+After one of the GitHub Actions security breaches GitHub decided to trim down the default permission set for actions running in private repositories.
 
 If you are trying to run action with default setup in the private repository, you will see the following error during `checkout` step:
 
@@ -114,12 +115,12 @@ jobs:
     permissions:
       contents: read
     #####
-    steps:
-      ...
+    steps: ...
 ```
 
-If you would like to learn a little bit more about this problem, you can visit this issue in the GitHub Checkout Action repository: 
-* https://github.com/actions/checkout/issues/254
+If you would like to learn a little bit more about this problem, you can visit this issue in the GitHub Checkout Action repository:
+
+- https://github.com/actions/checkout/issues/254
 
 ## 🔍️ Debugging
 

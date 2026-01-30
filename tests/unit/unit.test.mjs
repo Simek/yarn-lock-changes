@@ -1,7 +1,7 @@
 import { test } from 'uvu';
 import { is } from 'uvu/assert';
 
-import { diffLocks, STATUS, countStatuses, parseLock } from '../../src/utils.mjs';
+import { countStatuses, diffLocks, parseLock, STATUS } from '../../src/utils.mjs';
 import { getTestLockContent } from '../testUtils.mjs';
 
 test('Yarn Classic - detect changes', () => {
