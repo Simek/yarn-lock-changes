@@ -1,6 +1,7 @@
 import { markdownTable } from 'markdown-table';
 
-import { countStatuses, STATUS_ORDER } from './utils.mjs';
+import { type LockChanges, type StausType } from './types';
+import { countStatuses, STATUS_ORDER } from './utils';
 
 const ASSETS_URL = {
   ADDED: 'https://git.io/J38HP',
@@ -16,11 +17,11 @@ const ASSETS_WIDTH = {
   UPDATED: 60,
 };
 
-function getStatusLabel(status) {
+function getStatusLabel(status: StausType) {
   return `[<sub><img alt="${status}" src="${ASSETS_URL[status]}" height="16" width="${ASSETS_WIDTH[status]}" /></sub>](#)`;
 }
 
-export function createTable(lockChanges, groupByType = false, plainStatuses = false) {
+export function createTable(lockChanges: Record<string, LockChanges>, groupByType = false, plainStatuses = false) {
   return markdownTable(
     [
       ['Name', 'Status', 'Previous', 'Current'],
@@ -41,14 +42,14 @@ export function createTable(lockChanges, groupByType = false, plainStatuses = fa
   );
 }
 
-function createSummaryRow(lockChanges, status) {
+function createSummaryRow(lockChanges: Record<string, LockChanges>, status: keyof typeof ASSETS_URL) {
   const statusCount = countStatuses(lockChanges, status);
-  return statusCount ? [getStatusLabel(status), statusCount] : undefined;
+  return statusCount ? [getStatusLabel(status), statusCount.toString()] : [undefined];
 }
 
-export function createSummary(lockChanges) {
-  return markdownTable(
-    [['Status', 'Count'], ...STATUS_ORDER.map(status => createSummaryRow(lockChanges, status))].filter(Boolean),
-    { align: ['l', 'c'], alignDelimiters: false }
-  );
+export function createSummary(lockChanges: Record<string, LockChanges>) {
+  return markdownTable([['Status', 'Count'], ...STATUS_ORDER.map(status => createSummaryRow(lockChanges, status))], {
+    align: ['l', 'c'],
+    alignDelimiters: false,
+  });
 }

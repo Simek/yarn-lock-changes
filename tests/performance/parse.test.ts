@@ -1,12 +1,12 @@
-import lockfile from '@yarnpkg/lockfile';
+import * as lockfile from '@yarnpkg/lockfile';
 import { parseSyml } from '@yarnpkg/parsers';
-import { test } from 'uvu';
-import { is } from 'uvu/assert';
+import assert from 'node:assert/strict';
+import test from 'node:test';
 
-import { parseLock } from '../../src/utils.mjs';
-import { getTestLockContent } from '../testUtils.mjs';
+import { parseLock } from '../../src/utils';
+import { getTestLockContent } from '../testUtils';
 
-test('Classic - parser performance test (x100)', () => {
+void test('Classic - parser performance test (x100)', () => {
   const contentA = getTestLockContent('classic-downgrade', 'a.lock');
   const contentB = getTestLockContent('classic-downgrade', 'b.lock');
 
@@ -33,10 +33,10 @@ test('Classic - parser performance test (x100)', () => {
   const internalEnd = performance.now();
   console.timeEnd('Internal\t\t');
 
-  is(end - start > internalEnd - internalStart, true);
+  assert(end - start > internalEnd - internalStart);
 });
 
-test('Berry - parser performance test (x100)', () => {
+void test('Berry - parser performance test (x100)', () => {
   const contentA = getTestLockContent('berry-v3', 'a.lock');
   const contentB = getTestLockContent('berry-v3', 'b.lock');
 
@@ -63,7 +63,5 @@ test('Berry - parser performance test (x100)', () => {
   const internalEnd = performance.now();
   console.timeEnd('Internal\t\t');
 
-  is(end - start > internalEnd - internalStart, true);
+  assert(end - start > internalEnd - internalStart);
 });
-
-test.run();
