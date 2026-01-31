@@ -6,11 +6,11 @@
   "author": "Simek <me@simek.dev>",
   "license": "MIT",
   "scripts": {
-    "build": "esbuild src/action.js --bundle --platform=node --target=node22 --minify --legal-comments=none --outfile=dist/index.js",
-    "lint": "oxlint && oxfmt --check",
-    "lint:fix": "oxlint --fix && oxfmt",
+    "build": "esbuild src/action.ts --bundle --platform=node --target=node22 --minify --legal-comments=none --outfile=dist/index.js",
+    "lint": "oxlint --type-aware && oxfmt --check",
+    "lint:fix": "oxlint --type-aware --fix && oxfmt",
     "optimize": "svgo -f ./assets",
-    "test": "uvu tests -i .cjs -i testUtils"
+    "test": "node --import tsx --test"
   },
   "dependencies": {
     "@actions/core": "^3.0.0",
@@ -20,12 +20,16 @@
     "semver": "^7.7.3"
   },
   "devDependencies": {
+    "@types/node": "24.1.0",
+    "@types/semver": "^7.7.1",
     "@yarnpkg/lockfile": "^1.1.0",
     "@yarnpkg/parsers": "^3.0.3",
     "esbuild": "^0.27.2",
     "oxfmt": "^0.27.0",
     "oxlint": "^1.42.0",
-    "uvu": "^0.5.6"
+    "oxlint-tsgolint": "^0.11.4",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
   },
   "volta": {
     "node": "24.13.0",

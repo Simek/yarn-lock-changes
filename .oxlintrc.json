@@ -1,6 +1,6 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["import", "promise", "unicorn"],
+  "plugins": ["import", "promise", "typescript", "unicorn"],
   "ignorePatterns": ["**/dist"],
   "rules": {
     "curly": "error",
@@ -36,6 +36,32 @@
     "import/no-self-import": "error",
     "promise/always-return": "error",
     "promise/no-callback-in-promise": "error",
+    "typescript/await-thenable": "error",
+    "typescript/ban-ts-comment": [
+      "error",
+      {
+        "minimumDescriptionLength": 3,
+        "ts-check": false,
+        "ts-expect-error": "allow-with-description",
+        "ts-ignore": true,
+        "ts-nocheck": true
+      }
+    ],
+    "typescript/consistent-type-imports": ["error", { "fixStyle": "inline-type-imports" }],
+    "typescript/no-confusing-non-null-assertion": "error",
+    "typescript/no-extra-non-null-assertion": "error",
+    "typescript/no-misused-promises": ["error", { "checksVoidReturn": false }],
+    "typescript/no-restricted-types": "error",
+    "typescript/no-unnecessary-boolean-literal-compare": "error",
+    "typescript/no-unnecessary-type-arguments": "error",
+    "typescript/no-unnecessary-type-assertion": "error",
+    "typescript/no-unnecessary-type-constraint": "error",
+    "typescript/no-unsafe-enum-comparison": "error",
+    "typescript/prefer-includes": "error",
+    "typescript/prefer-nullish-coalescing": "error",
+    "typescript/prefer-readonly": "error",
+    "typescript/return-await": ["error", "error-handling-correctness-only"],
+    "typescript/unbound-method": "off",
     "unicorn/consistent-date-clone": "error",
     "unicorn/consistent-empty-array-spread": "error",
     "unicorn/consistent-existence-index-check": "error",

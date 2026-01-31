@@ -1,13 +1,20 @@
 import { debug, getBooleanInput, getInput, setFailed, warning } from '@actions/core';
 import { context, getOctokit } from '@actions/github';
+import { type operations } from '@octokit/openapi-types';
+import { type Api } from '@octokit/plugin-rest-endpoint-methods';
 import { Base64 } from 'js-base64';
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-import { createSummary, createTable } from './comment.mjs';
-import { countStatuses, diffLocks, parseLock, STATUS } from './utils.mjs';
+import { createSummary, createTable } from './comment';
+import { countStatuses, diffLocks, parseLock, STATUS } from './utils';
 
-async function getCommentId(octokit, oktokitParams, issueNumber, commentHeader) {
+async function getCommentId(
+  octokit: Api,
+  oktokitParams: { owner: string; repo: string },
+  issueNumber: number,
+  commentHeader: string
+) {
   const currentComments = await octokit.rest.issues.listComments({
     ...oktokitParams,
     issue_number: issueNumber,
@@ -19,11 +26,11 @@ async function getCommentId(octokit, oktokitParams, issueNumber, commentHeader) 
   }
 
   return currentComments.data
-    .filter(({ user, body }) => user.login === 'github-actions[bot]' && body.startsWith(commentHeader))
+    .filter(({ user, body }) => user?.login === 'github-actions[bot]' && body?.startsWith(commentHeader))
     .map(({ id }) => id)[0];
 }
 
-function getBasePathFromInput(input) {
+function getBasePathFromInput(input: string) {
   return input.lastIndexOf('/') ? input.substring(0, input.lastIndexOf('/')) : '';
 }
 
@@ -38,14 +45,20 @@ async function run() {
 
     const { owner, repo, number } = context.issue;
 
-    if (!number) {
+    if (!number || !context.payload.pull_request) {
       throw Error('💥 Cannot find the PR data in the workflow context, aborting!');
     }
 
     const { ref } = context.payload.pull_request.base;
-    const { default_branch } = context.payload.repository;
+    const contextRepo = context.payload?.repository;
 
-    const baseBranch = ref || default_branch;
+    if (!contextRepo) {
+      throw Error('💥 Cannot find the repository data in the workflow context, aborting!');
+    }
+
+    const { default_branch } = contextRepo;
+
+    const baseBranch = ref ?? default_branch;
     debug('Base branch: ' + baseBranch);
 
     const lockPath = resolve(process.cwd(), inputPath);
@@ -56,6 +69,9 @@ async function run() {
 
     const content = readFileSync(lockPath, { encoding: 'utf8' });
     const updatedLock = parseLock(content);
+    if (updatedLock.type === 'error') {
+      warning('Unsupported Yarn lock version! Please report this issue in the action repository.');
+    }
 
     const oktokitParams = { owner, repo };
     debug('Oktokit params: ' + JSON.stringify(oktokitParams));
@@ -73,7 +89,10 @@ async function run() {
       throw Error('💥 Cannot fetch repository base branch tree, aborting!');
     }
 
-    const baseLockSHA = baseTree.data.tree.filter(file => file.path === 'yarn.lock')[0].sha;
+    const baseLockSHA = baseTree.data.tree.filter(
+      (file: operations['repos/get-content']['responses']['200']['content']['application/vnd.github.object']) =>
+        file.path === 'yarn.lock'
+    )[0].sha;
 
     debug('Base lockfile SHA: ' + baseLockSHA);
 
@@ -155,7 +174,11 @@ async function run() {
       }
     }
   } catch (error) {
-    setFailed(error.message);
+    if (error instanceof Error) {
+      setFailed(error.message);
+    } else if (typeof error === 'string') {
+      setFailed(error);
+    }
   }
 }
 
