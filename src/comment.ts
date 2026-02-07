@@ -44,12 +44,17 @@ export function createTable(lockChanges: Record<string, LockChanges>, groupByTyp
 
 function createSummaryRow(lockChanges: Record<string, LockChanges>, status: keyof typeof ASSETS_URL) {
   const statusCount = countStatuses(lockChanges, status);
-  return statusCount ? [getStatusLabel(status), statusCount.toString()] : [undefined];
+  return statusCount ? [getStatusLabel(status), statusCount.toString()] : [];
 }
 
 export function createSummary(lockChanges: Record<string, LockChanges>) {
-  return markdownTable([['Status', 'Count'], ...STATUS_ORDER.map(status => createSummaryRow(lockChanges, status))], {
-    align: ['l', 'c'],
-    alignDelimiters: false,
-  });
+  return markdownTable(
+    [['Status', 'Count'], ...STATUS_ORDER.map(status => createSummaryRow(lockChanges, status))].filter(
+      row => row.length
+    ),
+    {
+      align: ['l', 'c'],
+      alignDelimiters: false,
+    }
+  );
 }
