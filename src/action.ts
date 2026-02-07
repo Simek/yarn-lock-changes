@@ -136,20 +136,12 @@ async function run() {
         '\n\n' +
         '</details>';
 
-      if (updateComment) {
-        if (commentId) {
-          await octokit.rest.issues.updateComment({
-            ...oktokitParams,
-            comment_id: commentId,
-            body,
-          });
-        } else {
-          await octokit.rest.issues.createComment({
-            ...oktokitParams,
-            issue_number: number,
-            body,
-          });
-        }
+      if (updateComment && commentId) {
+        await octokit.rest.issues.updateComment({
+          ...oktokitParams,
+          comment_id: commentId,
+          body,
+        });
       } else {
         await octokit.rest.issues.createComment({
           ...oktokitParams,
