@@ -2,7 +2,7 @@ import { debug, getBooleanInput, getInput, setFailed, warning } from '@actions/c
 import { context, getOctokit } from '@actions/github';
 import { type operations } from '@octokit/openapi-types';
 import { type Api } from '@octokit/plugin-rest-endpoint-methods';
-import { Base64 } from 'js-base64';
+import { Buffer } from 'node:buffer';
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
@@ -105,7 +105,7 @@ async function run() {
       throw Error('💥 Cannot fetch repository base lock file, aborting!');
     }
 
-    const baseLock = parseLock(Base64.decode(baseLockData.data.content));
+    const baseLock = parseLock(Buffer.from(baseLockData.data.content, 'base64').toString('utf8'));
     const lockChanges = diffLocks(baseLock, updatedLock);
     const lockChangesCount = Object.keys(lockChanges).length;
 
