@@ -31,8 +31,8 @@ async function getCommentId(
 }
 
 function getBasePathFromInput(input: string) {
-  const separatorIndex = input.lastIndexOf('/');
-  return separatorIndex > 0 ? input.slice(0, separatorIndex) : '';
+  const index = input.lastIndexOf('/');
+  return index !== -1 ? input.slice(0, index) : '';
 }
 
 async function run() {
