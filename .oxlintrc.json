@@ -3,6 +3,7 @@
   "plugins": ["import", "promise", "typescript", "unicorn"],
   "ignorePatterns": ["**/dist"],
   "rules": {
+    "branches-sharing-code": "error",
     "curly": "error",
     "eqeqeq": ["error", "always", { "null": "ignore" }],
     "func-style": ["error", "declaration"],
@@ -47,6 +48,7 @@
         "ts-nocheck": true
       }
     ],
+    "typescript/consistent-indexed-object-style": ["error", "record"],
     "typescript/consistent-type-imports": ["error", { "fixStyle": "inline-type-imports" }],
     "typescript/no-confusing-non-null-assertion": "error",
     "typescript/no-extra-non-null-assertion": "error",
@@ -73,6 +75,7 @@
     "unicorn/no-unnecessary-array-splice-count": "error",
     "unicorn/no-useless-collection-argument": "error",
     "unicorn/numeric-separators-style": "error",
+    "unicorn/prefer-array-find": "error",
     "unicorn/prefer-array-flat": "error",
     "unicorn/prefer-array-flat-map": "error",
     "unicorn/prefer-array-some": "error",
@@ -84,6 +87,7 @@
     "unicorn/prefer-node-protocol": "error",
     "unicorn/prefer-number-properties": "error",
     "unicorn/prefer-regexp-test": "error",
+    "unicorn/prefer-string-slice": "error",
     "unicorn/require-number-to-fixed-digits-argument": "error"
   }
 }
