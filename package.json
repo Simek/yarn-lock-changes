@@ -19,15 +19,15 @@
     "semver": "^7.8.0"
   },
   "devDependencies": {
-    "@types/node": "24.1.0",
+    "@types/node": "24.13.1",
     "@types/semver": "^7.7.1",
     "@yarnpkg/lockfile": "^1.1.0",
     "@yarnpkg/parsers": "^3.0.3",
     "esbuild": "^0.28.0",
-    "oxfmt": "^0.51.0",
-    "oxlint": "^1.66.0",
+    "oxfmt": "^0.54.0",
+    "oxlint": "^1.69.0",
     "oxlint-tsgolint": "^0.23.0",
-    "tsx": "^4.22.3",
+    "tsx": "^4.22.4",
     "typescript": "^6.0.3"
   },
   "volta": {
