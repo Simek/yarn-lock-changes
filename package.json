@@ -19,19 +19,19 @@
     "semver": "^7.8.5"
   },
   "devDependencies": {
-    "@types/node": "24.13.1",
-    "@types/semver": "^7.7.1",
+    "@types/node": "24.13.3",
+    "@types/semver": "^7.8.0",
     "@yarnpkg/lockfile": "^1.1.0",
-    "@yarnpkg/parsers": "^3.0.3",
+    "@yarnpkg/parsers": "^3.1.0",
     "esbuild": "^0.28.1",
-    "oxfmt": "^0.57.0",
-    "oxlint": "^1.72.0",
-    "oxlint-tsgolint": "^0.24.0",
-    "tsx": "^4.23.0",
-    "typescript": "^6.0.3"
+    "oxfmt": "^0.62.0",
+    "oxlint": "^1.77.0",
+    "oxlint-tsgolint": "^7.0.2001",
+    "tsx": "^4.23.7",
+    "typescript": "^7.0.2"
   },
   "volta": {
-    "node": "24.13.0",
+    "node": "24.19.0",
     "yarn": "1.22.22"
   },
   "packageManager": "yarn@1.22.22"
