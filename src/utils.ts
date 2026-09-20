@@ -4,12 +4,12 @@ import semverValid from 'semver/functions/valid';
 
 import { type BerryYarnEntry, type ClassicYarnEntry, type LockChanges, type ParsedLock, type StausType } from './types';
 
-export const STATUS: Record<StausType, StausType> = {
+export const STATUS = {
   ADDED: 'ADDED',
   UPDATED: 'UPDATED',
   DOWNGRADED: 'DOWNGRADED',
   REMOVED: 'REMOVED',
-};
+} satisfies Record<StausType, StausType>;
 
 export const STATUS_ORDER: StausType[] = [STATUS.ADDED, STATUS.UPDATED, STATUS.DOWNGRADED, STATUS.REMOVED];
 
@@ -184,7 +184,7 @@ export function parseLock(content: string): ParsedLock {
   };
 }
 
-export function diffLocks(previous: ParsedLock, current: ParsedLock): Record<string, LockChanges> {
+export function diffLocks(previous: ParsedLock, current: ParsedLock) {
   const changes: Record<string, LockChanges> = {};
   const previousPackages = formatLockEntry(previous);
   const currentPackages = formatLockEntry(current);
@@ -218,5 +218,5 @@ export function diffLocks(previous: ParsedLock, current: ParsedLock): Record<str
     }
   });
 
-  return changes;
+  return changes satisfies Record<string, LockChanges>;
 }
