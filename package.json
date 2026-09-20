@@ -24,10 +24,11 @@
     "@yarnpkg/lockfile": "^1.1.0",
     "@yarnpkg/parsers": "^3.1.0",
     "esbuild": "^0.28.2",
-    "oxfmt": "^0.64.0",
-    "oxlint": "^1.79.0",
-    "oxlint-tsgolint": "^7.0.2001",
-    "tsx": "^4.23.12",
+    "oxfmt": "^0.68.0",
+    "oxlint": "^1.83.0",
+    "oxlint-plugin-golden": "^0.1.2",
+    "oxlint-tsgolint": "^7.0.2002",
+    "tsx": "^4.23.15",
     "typescript": "^7.0.2"
   },
   "volta": {
